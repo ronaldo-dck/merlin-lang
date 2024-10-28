@@ -10,7 +10,7 @@ tome tomename {
     _ Exemplo de como preencher um vetor
     for (i : 0; i < 3; 1){
         vetorexemplo[i] : 0;
-    }
+    };
 
 %
 
@@ -19,11 +19,11 @@ tome tomename {
     while(numero < 13 & numero > 0 ) {
         if (numero / 2 = 0) {
             numero : numero / 2;
-        }
+        };
         if (numero / 2 > 0 | !naoinicializado) {
             numero : numero * 3 + 1;
-        }
-    }
+        };
+    };
     
 _    @
 
