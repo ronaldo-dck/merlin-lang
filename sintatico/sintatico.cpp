@@ -68,7 +68,8 @@ enum token_type
     gtoken_op_art_pr,
     gtoken_op_art_sc,
     gtoken_value,
-    gtoken_type
+    gtoken_type,
+    gtoken_end
 };
 
 
