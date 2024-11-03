@@ -8,21 +8,21 @@
 
 «operation»      → «assign-sq» | «control» | «for-sq» | «summon-sq» | «echo-sq»
 
-«assign-sq»      → «id» : «logic» | «id» : «value» 
+«assign-sq»      → «id» : «logic»  
 «for-sq»         → for («assign-sq»; «logic»; int) «block»
 
 «summon-sq»      → summon(«id») 
 «echo-sq»        → echo(string) | echo(«id»)
 
-«contron»        → «control-struc»  «expression» «block» 
+«control»        → «control-struc»  «expression» «block» 
 «control-struc»  → if | while 
 
-«block»          → {«cmd-sq»} 
+«block»          → {«cmd-sq»}
+
 «expression»     → («logic»)
 
 «logic»          → «logic» «op-logic» «bool-op» | «bool-op» 
-«bool-op»        → «relacional» | !«relacional» | «expression»  | !«expression» 
-
+«bool-op»        → «relacional» | !«relacional» 
 «relacional»     → «relacional» «op-rel» «relacional-op» | «relacional-op» 
 «relacional-op»  → «expr» | («relacional») 
 
@@ -31,7 +31,7 @@
 «factor»         → («expr») | «value» | «id» 
 
 
-«id»             → id_puro | «id»[«expr»]
+«id»             → id_puro | id_puro[«expr»]
 «op-logic»       → '&' | '|' 
 «op-rel»         → '>' | '<' | '='
 «op-art-pr»      → + | -
@@ -70,9 +70,6 @@ s1
 «logic»          → •«bool-op» 
 «bool-op»        → •«relacional» 
 «bool-op»        → •!«relacional» 
-«bool-op»        → •«expression» 
-«bool-op»        → •!«expression»
-«expression»     → •(«logic») 
 «relacional»     → •«relacional» «op-rel» «relacional-op» 
 «relacional»     → •«relacional-op» 
 «relacional-op»  → •«expr» 
@@ -126,3 +123,5 @@ s4
 «value»          → •string
 «id»             → •id_puro 
 «id»             → •«id»[«expr»]
+
+
