@@ -3,18 +3,8 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <map>
 
-/*
-TODO
-
-número negativo
-modo erros
-regex
-.
-.
-.
-
- */
 using namespace std;
 
 enum token_type
@@ -51,7 +41,34 @@ enum token_type
     token_col_esq,
     token_col_dir,
     token_chv_esq,
-    token_chv_dir
+    token_chv_dir,
+    gtoken_program = 100,
+    gtoken_cmd_init,
+    gtoken_declare_sq,
+    gtoken_cmd_sq,
+    gtoken_operation,
+    gtoken_assign_sq,
+    gtoken_for_sq,
+    gtoken_summon_sq,
+    gtoken_echo_sq,
+    gtoken_control,
+    gtoken_control_struc,
+    gtoken_block,
+    gtoken_expression,
+    gtoken_logic,
+    gtoken_bool_op,
+    gtoken_relacional,
+    gtoken_relacional_op,
+    gtoken_expr,
+    gtoken_term,
+    gtoken_factor,
+    gtoken_id,
+    gtoken_op_logic,
+    gtoken_op_rel,
+    gtoken_op_art_pr,
+    gtoken_op_art_sc,
+    gtoken_value,
+    gtoken_type
 };
 
 struct t_token
@@ -275,7 +292,7 @@ vector<t_token> lexical_analysis(string filename)
             tmp += c;
             c = inputFile.get();
             pos++;
-            
+
             if (tmp == "~" && !isdigit(c))
             {
                 cout << "Invalid negative number: " << tmp << " at line " << line + 1 << " col " << pos + 1 << endl;
@@ -353,14 +370,38 @@ vector<t_token> lexical_analysis(string filename)
     return tokens;
 }
 
+// enum grammar_token
+// {
+
+// };
+
+void sintax_analysis(vector<t_token> tokens)
+{
+    vector<map<token_type, string>> listOfMaps(10);
+    listOfMaps[0] = {{token_tome, "S2"}, {gtoken_program, "1"}};
+    listOfMaps[2] = {{token_id, "S3"}};
+    listOfMaps[3] = {{token_chv_esq, "S4"}, {gtoken_cmd_init, "5"}};
+
+    int index = 0;
+    for (const auto &map : listOfMaps)
+    {
+        cout << "---" << index++ << endl;
+        for (const auto &pair : map)
+        {
+            cout << pair.first << ": " << pair.second << endl;
+        }
+    }
+}
+
 int main(int argc, char const *argv[2])
 {
     string filename = argv[1];
-    string verbose =  argc > 2 ? argv[2]: "";
+    string verbose = argc > 2 ? argv[2] : "";
     vector<t_token> tokens = lexical_analysis(filename);
     if (verbose == "--verbose")
-    for (const auto &token : tokens)
-        cout << "<<" << setw(18) << get_token_type_name(token.type) << ", " << token.data << "  >>" << endl;
-    
+        for (const auto &token : tokens)
+            cout << "<<" << setw(18) << get_token_type_name(token.type) << ", " << token.data << "  >>" << endl;
+
+    sintax_analysis(tokens);
     return 0;
 }
