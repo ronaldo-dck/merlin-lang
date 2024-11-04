@@ -8,7 +8,228 @@
 #include "token.h"
 #include "productions.h"
 #include "state_table.h"
+#include <dlfcn.h>
 using namespace std;
+
+token_type get_token(string lexema)
+{
+    if (lexema == "int")
+        return token_type_int;
+    if (lexema == "float")
+        return token_type_float;
+    if (lexema == "string")
+        return token_type_string;
+    if (lexema == "if")
+        return token_if;
+    if (lexema == "for")
+        return token_for;
+    if (lexema == "while")
+        return token_while;
+    if (lexema == "summon")
+        return token_summon;
+    if (lexema == "echo")
+        return token_echo;
+    if (lexema == "tome")
+        return token_tome;
+    if (lexema == "ingredients")
+        return token_ingredients;
+
+    return token_id;
+}
+
+token_type get_op_or_del(char c)
+{
+    if (c == ';')
+        return token_endline;
+    if (c == '+')
+        return token_add;
+    if (c == '-')
+        return token_sub;
+    if (c == '*')
+        return token_mul;
+    if (c == '/')
+        return token_div;
+    if (c == '|')
+        return token_or;
+    if (c == '&')
+        return token_and;
+    if (c == '!')
+        return token_not;
+    if (c == '=')
+        return token_eq;
+    if (c == '<')
+        return token_le;
+    if (c == '>')
+        return token_gr;
+    if (c == ':')
+        return token_atr;
+    if (c == '(')
+        return token_par_esq;
+    if (c == ')')
+        return token_par_dir;
+    if (c == '[')
+        return token_col_esq;
+    if (c == ']')
+        return token_col_dir;
+    if (c == '{')
+        return token_chv_esq;
+    if (c == '}')
+        return token_chv_dir;
+
+    return token_ignore;
+}
+
+    vector<t_token> lexical_analysis(string filename)
+    {
+        ifstream inputFile(filename);
+        vector<t_token> tokens;
+
+        string text;
+        char c;
+        int pos = 0;
+        int line = 0;
+        while (1)
+        {
+            c = inputFile.get();
+            pos++;
+            if (c == EOF)
+                break;
+
+            if (c == '"')
+            {
+                string tmp;
+                while (c = inputFile.get())
+                {
+                    pos++;
+                    if (c == '\n')
+                    {
+                        cout << "Invalid string: " << tmp << " at line " << line + 1 << " col " << pos + 1 << endl;
+                        break;
+                    }
+                    if (c == '"')
+                        break;
+                    tmp += c;
+                }
+
+                tokens.push_back({token_string, tmp});
+                continue;
+            }
+
+            if (c == ' ' || c == '\n' || c == '\t' || c == '\r')
+            {
+                if (c == '\n')
+                {
+                    pos = 0;
+                    line++;
+                }
+                // while (c = inputFile.get() && (c == ' ' || c == '\n' || c == '\t' || c == '\r')){};
+                // tokens.push_back({token_ignore, ""});
+                continue;
+            }
+
+            if (c == '_')
+            {
+                while (c = inputFile.get())
+                {
+                    pos++;
+
+                    if (c == '\n')
+                    {
+                        pos = 0;
+                        line++;
+                        break;
+                    }
+                };
+
+                // tokens.push_back({token_ignore, ""});
+                continue;
+            }
+
+            if (isdigit(c) || c == '~')
+            {
+                string tmp;
+                tmp += c;
+                c = inputFile.get();
+                pos++;
+
+                if (tmp == "~" && !isdigit(c))
+                {
+                    cout << "Invalid negative number: " << tmp << " at line " << line + 1 << " col " << pos + 1 << endl;
+                    continue;
+                }
+
+                while (isdigit(c))
+                {
+                    tmp += c;
+                    c = inputFile.get();
+                    pos++;
+                }
+                if (c == '.')
+                {
+                    tmp += c;
+                    c = inputFile.get();
+                    pos++;
+                    if (isdigit(c))
+                    {
+                        while (isdigit(c))
+                        {
+                            tmp += c;
+                            c = inputFile.get();
+                            pos++;
+                        }
+                        tokens.push_back({token_float, tmp});
+                        inputFile.seekg(-1, ios::cur);
+                        pos--;
+                        continue;
+                    }
+                    else
+                    {
+                        // throw "Invalid float"s;
+                        cout << "Invalid float: " << tmp << " at line " << line + 1 << " col " << pos + 1 << endl;
+                        continue;
+                    }
+                }
+                else
+                {
+                    tokens.push_back({token_int, tmp});
+                    inputFile.seekg(-1, ios::cur);
+                    pos--;
+                    continue;
+                }
+            }
+
+            if (isalpha(c))
+            {
+                string tmp;
+                tmp += c;
+                c = inputFile.get();
+                pos++;
+                while (isalnum(c))
+                {
+                    tmp += c;
+                    c = inputFile.get();
+                    pos++;
+                }
+                tokens.push_back({get_token(tmp), tmp});
+                inputFile.seekg(-1, ios::cur);
+                pos--;
+                continue;
+            }
+
+            if (c == ';' || c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '&' || c == '!' || c == '=' || c == '<' || c == '>' || c == ':' || c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}')
+            {
+                tokens.push_back({get_op_or_del(c), ""});
+                continue;
+            }
+
+            // throw "Invalid character"s;
+            cout << "Invalid character: " << c << " at line " << line + 1 << " col " << pos + 1 << endl;
+        }
+
+        return tokens;
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 const char *get_token_type_name(token_type type)
 {
@@ -80,6 +301,62 @@ const char *get_token_type_name(token_type type)
         return "Left Brace";
     case token_chv_dir:
         return "Right Brace";
+    case gtoken_program:
+        return "Program";
+    case gtoken_cmd_init:
+        return "cmd_Initialize";
+    case gtoken_declare_sq:
+        return "Declare-sq";
+    case gtoken_cmd_sq:
+        return "Command-sq";
+    case gtoken_operation:
+        return "Operation";
+    case gtoken_assign_sq:
+        return "Assign-sq";
+    case gtoken_for_sq:
+        return "For-sq";
+    case gtoken_summon_sq:
+        return "Summon-sq";
+    case gtoken_echo_sq:
+        return "Echo-sq";
+    case gtoken_control:
+        return "Control";
+    case gtoken_control_struc:
+        return "Control Structure";
+    case gtoken_block:
+        return "Block";
+    case gtoken_expression:
+        return "Expression";
+    case gtoken_logic:
+        return "Logic";
+    case gtoken_bool_op:
+        return "Boolean Operator";
+    case gtoken_relacional:
+        return "Relational";
+    case gtoken_relacional_op:
+        return "Relational Operator";
+    case gtoken_expr:
+        return "Expression";
+    case gtoken_term:
+        return "Term";
+    case gtoken_factor:
+        return "Factor";
+    case gtoken_id:
+        return "Identifier";
+    case gtoken_op_logic:
+        return "Logic Operator";
+    case gtoken_op_rel:
+        return "Relational Operator";
+    case gtoken_op_art_pr:
+        return "Arithmetic Operator (Primary)";
+    case gtoken_op_art_sc:
+        return "Arithmetic Operator (Secondary)";
+    case gtoken_value:
+        return "Value";
+    case gtoken_type:
+        return "Type";
+    case gtoken_end:
+        return "End";
     default:
         return "Error";
     }
@@ -127,106 +404,107 @@ std::map<char, int> get_action(const std::string &input)
     return action;
 }
 
+void print_stack(stack<int> pilha)
+{
+    
+    int loop = pilha.size();
+    for (int i = loop; i > 0; i--)
+    {
+        if (i % 2 == 0)
+            cout << "state: " << pilha.top() << " ";
+        else
+        {
+            token_type token = static_cast<token_type>(pilha.top());
+            cout << get_token_type_name(token) << "| ";
+        }
+        pilha.pop();
+    }
+    cout << endl;
+}
+
 void sintax_analysis(vector<token_type> tokens)
 {
     StateTable stateTable = initStateTable();
     ProductionsMap productions = initProductions();
 
     stack<int> pilha;
-    pilha.push(0);
     pilha.push(gtoken_end);
+    pilha.push(0);
 
-    int current_state = 8; // PARA TESTES em real sempre ZERO
+    int current_state = 0; // PARA TESTES em real sempre ZERO
     int ip = 0;
 
-    // for (const auto &map : stateTable)
-    // {
-    //     cout << "---" << index++ << endl;
-    //     for (const auto &pair : map)
-    //     {
-    //         cout << pair.first << ": " << pair.second << endl;
-    //     }
-    // }
-    while (!pilha.empty() || ip < 4)
+    while (!pilha.empty())
     {
         cout << get_token_type_name(tokens[ip]) << endl;
-        for (const auto &entry : stateTable[current_state])
-        {
-            
-            if (entry.first == tokens[ip])
-            {
-                map<char, int> action = get_action(entry.second);
-                char task;
-                int next_state;
-
-                // Desmontando o mapa em duas variáveis
-                for (const auto &pair : action)
-                {
-                    task = pair.first;    // Atribui a chave à variável key
-                    next_state = pair.second; // Atribui o valor à variável value
-                    break;               // Sai do loop após o primeiro par
-                }
-                current_state = next_state;
-                pilha.push(tokens[ip]);
-                pilha.push(next_state);
-
-                std::cout << "  Token: " << get_token_type_name(entry.first) << ", Ação: " << entry.second << "\n";
-                cout << current_state << "   ip:" << ip<< endl;
-            }
-        }
-        ip++;
-        if(ip == 4)
+        auto entry = stateTable[current_state].at(tokens[ip]);
+        if(entry == "ACEITA"){
+            cout << "linguagem sintaticamente correta\n";
             exit(0);
+        }
+        
+        map<char, int> action = get_action(entry);
+        char task;
+        int next_state;
+
+        for (const auto &pair : action)
+        {
+            task = pair.first;        // Atribui a chave à variável key
+            next_state = pair.second; // Atribui o valor à variável value
+            break;                    // Sai do loop após o primeiro par
+        }
+        cout << "action: " << task << " " << next_state << endl;
+        if (task == 'S')
+        {
+            current_state = next_state;
+            pilha.push(tokens[ip]);
+            pilha.push(next_state);
+            ip++;
+        }
+        if (task == 'R')
+        {
+            print_stack(pilha);
+            for (int i = 0; i < 2 * productions[next_state].derivados.size(); i++)
+            {
+                pilha.pop();
+                // print_stack(pilha);
+                // cout << "=========================================================\n";
+            }
+
+            current_state = pilha.top();
+
+            pilha.push(productions[next_state].red);
+            cout << "=========================================================\n";
+            // print_stack(pilha);
+
+            auto entry = stateTable[current_state].at(productions[next_state].red);
+            auto action = get_action(entry);
+            pilha.push(action.at('D'));
+            current_state = pilha.top();
+
+            print_stack(pilha);
+
+            // exit(0);
+        }
+
+        // std::cout << "  Token: " << get_token_type_name(tokens[ip]) << ", Ação: " << entry << "\n";
+        // cout << current_state << "   ip:" << ip << endl;
+
     }
-    /*
+    
+}
 
-
-        stack: 0
-        tokens:
-            token_tome
-
-        stateTable[0].at(token_tome) -> "S2"
-
-        stack: 0 token_tome 2
-        tokens:
-            token_id
-
-        stateTable[2].at(token_id) -> "S3"
-        stack: 0 token_tome 2 token_id 3
-
-        ...
-
-        stack: 0 token_tome 2 token_id 3 token_chv_esq 4 gtoken_cmd_sq 5
-        stack: 0 token_tome 2 token_id 3 token_chv_esq 4 gtoken_cmd_init 5
-        stack: 0 token_tome 2 token_id 3 token_chv_esq 4 gtoken_cmd_init 5 token_chv_dir 6
-
-    // «program»        → "tome" "id_puro" {«cmd_init»}
-    "prod:gtoken_program,token_tome,token_id,token_chv_esq,gtoken_cmd_init,token_chv_dir"
-
-
-    s
-    0
-    prod:
-
-    acessa tabela
-    (processa string) | acessa algo
-    -
-    -
-    -
-
-
-    numerar produções
-    transformá-las em map<int, prod> ->
-
-        stack: 0 program 1
-        aceita
-     */
+vector<token_type> extract_tokens_from_data(string filename){
+    vector<t_token> tokens_and_data = lexical_analysis(filename);
+    vector<token_type> tokens_types;
+    for(int i = 0; i < tokens_and_data.size(); i++ ){
+        tokens_types.push_back(tokens_and_data[i].type);
+    }
+    return tokens_types;
 }
 
 int main(int argc, char const *argv[2])
 {
-
-    vector<token_type> tokens = {token_type_int, token_col_esq, token_int, token_col_dir};
-    sintax_analysis(tokens);
+    sintax_analysis(extract_tokens_from_data("/home/ronaldodrecksler/UNIOESTE/comp/merlin-lang/sintatico/overview.ml"));
     return 0;
 }

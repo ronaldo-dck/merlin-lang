@@ -16,7 +16,7 @@ _%
 
     summon(numero);
     naoinicializado : ~2.102 - numero;
-    while(numero < 13 & numero > 0 ) {
+    while((numero < 13) & (numero > 0) ) {
         if (numero / 2 = 0) {
             numero : numero / 2;
         };

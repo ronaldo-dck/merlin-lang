@@ -42,7 +42,7 @@ ProductionsMap initProductions() {
         {34, {gtoken_factor, {gtoken_value}}},
         {35, {gtoken_factor, {gtoken_id}}},
         {36, {gtoken_id, {token_id}}},
-        {37, {gtoken_id, {token_id, token_col_esq, gtoken_expr, token_col_dir}}},
+        {37, {gtoken_id, {token_id, token_col_esq, token_int, token_col_dir}}},
         {38, {gtoken_op_logic, {token_and}}},
         {39, {gtoken_op_logic, {token_or}}},
         {40, {gtoken_op_rel, {token_gr}}},
@@ -59,6 +59,10 @@ ProductionsMap initProductions() {
         {51, {gtoken_type, {token_type_int, token_col_esq, token_int, token_col_dir}}},
         {52, {gtoken_type, {token_type_float}}},
         {53, {gtoken_type, {token_type_float, token_col_esq, token_int, token_col_dir}}},
-        {54, {gtoken_type, {token_type_string}}}
+        {54, {gtoken_type, {token_type_string}}},
+        {55, {gtoken_declare_sq, {gtoken_type, token_id, token_endline}}},
+        {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
+        {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
+        {58, {gtoken_cmd_sq, {gtoken_operation, token_endline}}},
     };
 }

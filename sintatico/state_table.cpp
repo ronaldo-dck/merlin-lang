@@ -3,7 +3,7 @@
 
 // Função para inicializar a stateTable
 StateTable initStateTable() {
-    StateTable stateTable(114); // Inicializa a stateTable com 114 mapas
+    StateTable stateTable(116); // Inicializa a stateTable com 114 mapas
   stateTable[0] = {
         {token_tome, "S2"},
         {gtoken_program, "1.0"}};
@@ -49,6 +49,7 @@ StateTable initStateTable() {
     stateTable[9] = {
         {token_id, "S10"}};
     stateTable[10] = {
+        {token_endline, "S15"},
         {token_atr, "S11"}};
     stateTable[11] = {
         {token_int, "S50"},
@@ -62,7 +63,7 @@ StateTable initStateTable() {
         {token_type_float, "S18"},
         {token_type_string, "S17"},
         {gtoken_declare_sq, "14.0"},
-        {gtoken_type, "9.0"}};
+        {gtoken_type, "9.0"}, {token_chv_dir, "R56"}};
     stateTable[14] = {
         {token_chv_dir, "R4"}};
     stateTable[15] = {
@@ -70,7 +71,7 @@ StateTable initStateTable() {
         {token_type_float, "S18"},
         {token_type_string, "S17"},
         {gtoken_declare_sq, "16.0"},
-        {gtoken_type, "9.0"}};
+        {gtoken_type, "9.0"}, {token_chv_dir, "R55"}};
     stateTable[16] = {
         {token_chv_dir, "R3"}};
     stateTable[17] = {
@@ -130,7 +131,8 @@ StateTable initStateTable() {
         {gtoken_echo_sq, "75.0"},
         {gtoken_control, "72.0"},
         {gtoken_control_struc, "101.0"},
-        {gtoken_id, "79.0"}};
+        {gtoken_id, "79.0"},
+        {token_chv_dir, "R58"}};
     stateTable[31] = {};
     stateTable[32] = {
         {token_id, "S48"},
@@ -191,7 +193,9 @@ StateTable initStateTable() {
         {token_le, "S66"},
         {token_gr, "S67"},
         {token_eq, "S68"},
-        {gtoken_op_rel, "106.0"}};
+        {gtoken_op_rel, "106.0"},
+        {token_or, "R23"},
+        {token_and, "R23"}};
     stateTable[39] = {
         {token_endline, "R27"},
         {token_par_dir, "R27"},
@@ -222,7 +226,8 @@ StateTable initStateTable() {
         {gtoken_term, "49.0"},
         {gtoken_factor, "45.0"},
         {gtoken_id, "53.0"},
-        {gtoken_value, "46.0"}};
+        {gtoken_value, "46.0"},
+        {token_id, "S48"}};
     stateTable[42] = {
         {token_id, "R45"},
         {token_par_esq, "R45"},
@@ -292,7 +297,8 @@ StateTable initStateTable() {
         {token_add, "R36"},
         {token_sub, "R36"},
         {token_mul, "R36"},
-        {token_div, "R36"}};
+        {token_div, "R36"},
+        {token_col_esq, "S54"}};
     stateTable[49] = {
         {token_endline, "R30"},
         {token_par_dir, "R30"},
@@ -354,21 +360,10 @@ StateTable initStateTable() {
         {token_mul, "R35"},
         {token_div, "R35"}};
     stateTable[54] = {
-        {token_id, "S48"},
-        {token_par_esq, "S109"},
-        {token_int, "S50"},
-        {token_float, "S51"},
-        {token_string, "S52"},
-        {gtoken_expr, "55.0"},
-        {gtoken_term, "49.0"},
-        {gtoken_factor, "45.0"},
-        {gtoken_id, "53.0"},
-        {gtoken_value, "46.0"}};
+        {token_id, "S114"},
+        {token_int, "S55"}},
     stateTable[55] = {
-        {token_col_dir, "S56"},
-        {token_add, "S59"},
-        {token_sub, "S60"},
-        {gtoken_op_art_pr, "61.0"}};
+        {token_col_dir, "S56"}};
     stateTable[56] = {
         {token_endline, "R37"},
         {token_atr, "R37"},
@@ -485,7 +480,9 @@ StateTable initStateTable() {
         {token_string, "R42"}};
     stateTable[69] = {
         {token_endline, "R22"},
-        {token_par_dir, "R22"}};
+        {token_par_dir, "R22"},
+        {token_and, "R22"},
+        {token_or, "R22"},};
     stateTable[70] = {
         {token_chv_esq, "R20"}};
     stateTable[71] = {
@@ -539,7 +536,8 @@ StateTable initStateTable() {
     stateTable[81] = {
         {token_and, "S34"},
         {token_or, "S35"},
-        {gtoken_op_logic, "36.0"}};
+        {gtoken_op_logic, "36.0"},
+        {token_endline, "R11"}};
     stateTable[82] = {
         {token_par_esq, "S83"}};
     stateTable[83] = {
@@ -633,9 +631,17 @@ StateTable initStateTable() {
         {gtoken_op_rel, "106.0"}};
     stateTable[108] = {
         {token_par_dir, "S43"},
+        // {token_par_dir, "R27"},
         {token_add, "S59"},
         {token_sub, "S60"},
-        {gtoken_op_art_pr, "61.0"}};
+        {gtoken_op_art_pr, "61.0"},
+        {token_endline, "R27"},
+        {token_and, "R27"},
+        {token_or, "R27"},
+        {token_le, "R27"},
+        {token_gr, "R27"},
+        {token_eq, "R27"},
+    };
     stateTable[109] = {
         {token_id, "S48"},
         {token_par_esq, "S109"},
@@ -668,6 +674,23 @@ StateTable initStateTable() {
         {token_chv_dir, "R5"}};
     stateTable[113] = {
         {token_chv_dir, "R2"}};
+    stateTable[114] = {
+        {token_col_dir, "S115"},
+    };
+    stateTable[115] = {
+    {token_endline, "R57"},
+    {token_atr, "R57"},
+    {token_par_dir, "R57"},
+    {token_and, "R57"},
+    {token_or, "R57"},
+    {token_le, "R57"},
+    {token_gr, "R57"},
+    {token_eq, "R57"},
+    {token_add, "R57"},
+    {token_sub, "R57"},
+    {token_mul, "R57"},
+    {token_div, "R57"}
+    };
 
     return stateTable;
 }
