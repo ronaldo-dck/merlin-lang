@@ -74,6 +74,8 @@ enum token_type {
 struct t_token {
     token_type type;
     std::string data;
+    int line;
+    int col;
 };
 
 // Estrutura para representar uma produção
