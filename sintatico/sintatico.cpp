@@ -8,7 +8,7 @@
 #include "token.h"
 #include "productions.h"
 #include "state_table.h"
-#include <dlfcn.h>
+// #include <dlfcn.h>
 using namespace std;
 
 token_type get_token(string lexema)
@@ -436,8 +436,12 @@ void sintax_analysis(vector<token_type> tokens)
 
     while (!pilha.empty())
     {
-        cout << get_token_type_name(tokens[ip]) << endl;
-        auto entry = stateTable[current_state].at(tokens[ip]);
+        token_type source = tokens[ip];
+        if (ip >= tokens.size())
+            source = gtoken_end;
+
+        cout << get_token_type_name(source) << endl;
+        auto entry = stateTable[current_state].at(source);
         if(entry == "ACEITA"){
             cout << "linguagem sintaticamente correta\n";
             exit(0);

@@ -5,7 +5,7 @@
 // Função para inicializar o mapa de produções
 ProductionsMap initProductions() {
     return {
-        {0, {gtoken_program, {token_tome, token_chv_esq, gtoken_cmd_init, token_chv_dir}}},
+        {0, {gtoken_program, {token_tome, token_id, token_chv_esq, gtoken_cmd_init, token_chv_dir}}},
         {1, {gtoken_cmd_init, {token_ingredients, token_chv_esq, gtoken_declare_sq, token_chv_dir, gtoken_cmd_sq}}},
         {2, {gtoken_cmd_init, {gtoken_cmd_sq}}},
         {3, {gtoken_declare_sq, {gtoken_type, token_id, token_endline, gtoken_declare_sq}}},
@@ -64,5 +64,8 @@ ProductionsMap initProductions() {
         {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
         {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
         {58, {gtoken_cmd_sq, {gtoken_operation, token_endline}}},
+        {59, {gtoken_cmd_sq, {}}},
+        {60, {gtoken_block, {token_chv_esq, token_chv_dir}}},
+        {61, {gtoken_cmd_init, {token_ingredients, token_chv_esq, gtoken_declare_sq, token_chv_dir}}},
     };
 }

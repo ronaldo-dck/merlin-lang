@@ -3,7 +3,7 @@
 
 // Função para inicializar a stateTable
 StateTable initStateTable() {
-    StateTable stateTable(116); // Inicializa a stateTable com 114 mapas
+    StateTable stateTable(117); // Inicializa a stateTable com 114 mapas
   stateTable[0] = {
         {token_tome, "S2"},
         {gtoken_program, "1.0"}};
@@ -31,7 +31,8 @@ StateTable initStateTable() {
         {gtoken_echo_sq, "75.0"},
         {gtoken_control, "72.0"},
         {gtoken_control_struc, "101.0"},
-        {gtoken_id, "79.0"}};
+        {gtoken_id, "79.0"},
+        {token_chv_dir, "R59"}};
     stateTable[5] = {
         {token_chv_dir, "S6"}};
     stateTable[6] = {
@@ -111,7 +112,8 @@ StateTable initStateTable() {
         {gtoken_echo_sq, "75.0"},
         {gtoken_control, "72.0"},
         {gtoken_control_struc, "101.0"},
-        {gtoken_id, "79.0"}};
+        {gtoken_id, "79.0"},
+        {token_chv_dir, "R61"}};
     stateTable[28] = {
         {token_chv_dir, "R1"}};
     stateTable[29] = {
@@ -510,7 +512,8 @@ StateTable initStateTable() {
         {gtoken_echo_sq, "75.0"},
         {gtoken_control, "72.0"},
         {gtoken_control_struc, "101.0"},
-        {gtoken_id, "79.0"}};
+        {gtoken_id, "79.0"},
+        {token_chv_dir, "S116"}};
     stateTable[77] = {
         {token_chv_dir, "S78"}};
     stateTable[78] = {
@@ -604,7 +607,8 @@ StateTable initStateTable() {
         {token_par_esq, "S32"},
         {gtoken_expression, "102.0"}};
     stateTable[102] = {
-        {gtoken_block, "103.0"}};
+        {gtoken_block, "103.0"},
+        {token_chv_esq, "S76"}};
     stateTable[103] = {
         {token_endline, "R16"}};
     stateTable[104] = {
@@ -690,6 +694,10 @@ StateTable initStateTable() {
     {token_sub, "R57"},
     {token_mul, "R57"},
     {token_div, "R57"}
+    };
+
+    stateTable[116] = {
+        {token_endline, "R60"}
     };
 
     return stateTable;
