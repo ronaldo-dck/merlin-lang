@@ -8,7 +8,6 @@
 #include "token.h"
 #include "productions.h"
 #include "state_table.h"
-// #include <dlfcn.h>
 using namespace std;
 
 token_type get_token(string lexema)
@@ -471,9 +470,9 @@ void sintax_analysis(vector<t_token> tokens_and_data)
 
             for (const auto &pair : action)
             {
-                task = pair.first;        // Atribui a chave à variável key
-                next_state = pair.second; // Atribui o valor à variável value
-                break;                    // Sai do loop após o primeiro par
+                task = pair.first;       
+                next_state = pair.second;
+                break;                   
             }
             // exit(1);
 

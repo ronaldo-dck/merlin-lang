@@ -4,7 +4,7 @@
 
 #include <map>
 #include <vector>
-#include "token.h" // Incluindo o arquivo de tokens
+#include "token.h"
 
 // Define o tipo de dado para um mapa de produções
 using ProductionsMap = std::map<int, prod>;

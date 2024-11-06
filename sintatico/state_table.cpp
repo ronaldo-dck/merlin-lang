@@ -1,9 +1,8 @@
 // Arquivo: state_table.cpp
 #include "state_table.h"
 
-// Função para inicializar a stateTable
 StateTable initStateTable() {
-    StateTable stateTable(117); // Inicializa a stateTable com 114 mapas
+    StateTable stateTable(117);
   stateTable[0] = {
         {token_tome, "S2"},
         {gtoken_program, "1.0"}};

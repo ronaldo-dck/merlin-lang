@@ -2,7 +2,6 @@
 #include "token.h"
 #include "productions.h"
 
-// Função para inicializar o mapa de produções
 ProductionsMap initProductions() {
     return {
         {0, {gtoken_program, {token_tome, token_id, token_chv_esq, gtoken_cmd_init, token_chv_dir}}},
