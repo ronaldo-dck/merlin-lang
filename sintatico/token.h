@@ -82,6 +82,7 @@ struct t_token {
 struct prod {
     token_type red;                   // Tipo de token de redução
     std::vector<token_type> derivados; // Lista de tipos de token derivados
+        
 };
 
 #endif // TOKEN_H

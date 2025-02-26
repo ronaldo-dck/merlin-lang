@@ -3,7 +3,7 @@
 
 StateTable initStateTable() {
     StateTable stateTable(117);
-  stateTable[0] = {
+   stateTable[0] = {
         {token_tome, "S2"},
         {gtoken_program, "1.0"}};
     stateTable[1] = {

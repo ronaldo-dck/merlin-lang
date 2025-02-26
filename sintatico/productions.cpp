@@ -40,7 +40,7 @@ ProductionsMap initProductions() {
         {33, {gtoken_factor, {token_par_esq, gtoken_expr, token_par_dir}}},
         {34, {gtoken_factor, {gtoken_value}}},
         {35, {gtoken_factor, {gtoken_id}}},
-        {36, {gtoken_id, {token_id}}},
+        {36, {gtoken_id, {token_id}}}, // gtoken_id.value = token_id.data
         {37, {gtoken_id, {token_id, token_col_esq, token_int, token_col_dir}}},
         {38, {gtoken_op_logic, {token_and}}},
         {39, {gtoken_op_logic, {token_or}}},

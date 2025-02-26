@@ -438,7 +438,23 @@ void sintax_analysis(vector<t_token> tokens_and_data)
 
     vector<token_type> tokens = extract_tokens_from_data(tokens_and_data);
 
+    /*
+        varrer tokens_and_data
+        substituir:
+            token_int,
+            token_float,
+            token_string,
+            token_type_int,
+            token_type_float,
+            token_type_string,
+        por
+            int
+            float
+            string
+    */
+
     stack<int> pilha;
+    // stack<t_token> pilhaTipo;
     pilha.push(gtoken_end);
     pilha.push(0);
 
@@ -585,10 +601,24 @@ void sintax_analysis(vector<t_token> tokens_and_data)
         }
         if (task == 'R')
         {
+            /*
+            pilha com token/tipo
+            .size() <- tokens q devem ser considerados (num de parametros)
+                -> [param1, param2, ...] pop()
+
+            tipo = actions[next_state](...parametros)
+
+            _ t_type_int t_id t_atr t_int
+            _ int t_id t_atr int
+
+            pilha.push({tipo, productions[next_state].red});
+            */
+
             // print_stack(pilha);
             for (int i = 0; i < 2 * productions[next_state].derivados.size(); i++)
             {
                 pilha.pop();
+                
                 // print_stack(pilha);
                 // cout << "=========================================================\n";
             }
