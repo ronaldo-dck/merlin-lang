@@ -2,14 +2,14 @@
 #include "token.h"
 #include "actions.h"
 
-ActionsMap initActions()
-{
+ActionsMap initActions() {
     return {
         // {0, {gtoken_program, {token_tome, token_id, token_chv_esq, gtoken_cmd_init, token_chv_dir}}},
-        {0, [](std::vector<t_token> tokens) -> t_token{ return tokens[0]; }},
+        {0, [](std::vector<t_token> tokens) -> t_token { return tokens[0]; }},
         // {1, {gtoken_cmd_init, {token_ingredients, token_chv_esq, gtoken_declare_sq, token_chv_dir, gtoken_cmd_sq}}},
         // {2, {gtoken_cmd_init, {gtoken_cmd_sq}}},
         // {3, {gtoken_declare_sq, {gtoken_type, token_id, token_endline, gtoken_declare_sq}}},
+        {3,[](std::vector<t_token> tokens)->t_token { return tokens[0];}},
         // {4, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline, gtoken_declare_sq}}},
         // {5, {gtoken_cmd_sq, {gtoken_operation, token_endline, gtoken_cmd_sq}}},
         // {6, {gtoken_operation, {gtoken_assign_sq}}},
@@ -54,13 +54,21 @@ ActionsMap initActions()
         // {45, {gtoken_op_art_sc, {token_mul}}},
         // {46, {gtoken_op_art_sc, {token_div}}},
         // {47, {gtoken_value, {token_int}}},
+        {47, [](std::vector<t_token> tokens) -> t_token { return /* token_int */ tokens[0]; }},
         // {48, {gtoken_value, {token_float}}},
+        {48, [](std::vector<t_token> tokens) -> t_token { return /* token_float */ tokens[0]; }},
         // {49, {gtoken_value, {token_string}}},
+        {49, [](std::vector<t_token> tokens) -> t_token { return /* token_string */ tokens[0]; }},
         // {50, {gtoken_type, {token_type_int}}},
+        {50, [](std::vector<t_token> tokens) -> t_token { return /* token_int */ tokens[0]; }},
         // {51, {gtoken_type, {token_type_int, token_col_esq, token_int, token_col_dir}}},
+
         // {52, {gtoken_type, {token_type_float}}},
+        {52, [](std::vector<t_token> tokens) -> t_token { return /* token_float */ tokens[0]; }},
         // {53, {gtoken_type, {token_type_float, token_col_esq, token_int, token_col_dir}}},
+
         // {54, {gtoken_type, {token_type_string}}},
+        {54, [](std::vector<t_token> tokens) -> t_token { return /* token_string */ tokens[0]; }},
         // {55, {gtoken_declare_sq, {gtoken_type, token_id, token_endline}}},
         // {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
         // {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
