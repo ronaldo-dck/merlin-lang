@@ -7,5 +7,5 @@ tome tomename {
     aaa [a : 0;
 
     echo("numero = ";
-    echo(numero);
+    echo((numero));
 }

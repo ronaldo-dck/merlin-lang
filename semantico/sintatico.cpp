@@ -7,6 +7,7 @@
 #include <map>
 #include "token.h"
 #include "productions.h"
+#include "actions.h"
 #include "state_table.h"
 using namespace std;
 
@@ -421,6 +422,19 @@ void print_stack(stack<int> pilha)
     cout << endl;
 }
 
+void print_stack(stack<t_token> pilha)
+{
+
+    int loop = pilha.size();
+    for (int i = loop; i > 0; i--)
+    {
+        token_type token = static_cast<token_type>(pilha.top().type);
+        cout << get_token_type_name(token) << "| ";
+        pilha.pop();
+    }
+    cout << endl;
+}
+
 vector<token_type> extract_tokens_from_data(vector<t_token> tokens_and_data)
 {
     vector<token_type> tokens_types;
@@ -431,30 +445,14 @@ vector<token_type> extract_tokens_from_data(vector<t_token> tokens_and_data)
     return tokens_types;
 }
 
-void sintax_analysis(vector<t_token> tokens_and_data)
+void sintax_analysis(vector<t_token> tokens)
 {
     StateTable stateTable = initStateTable();
     ProductionsMap productions = initProductions();
-
-    vector<token_type> tokens = extract_tokens_from_data(tokens_and_data);
-
-    /*
-        varrer tokens_and_data
-        substituir:
-            token_int,
-            token_float,
-            token_string,
-            token_type_int,
-            token_type_float,
-            token_type_string,
-        por
-            int
-            float
-            string
-    */
+    ActionsMap actions = initActions();
 
     stack<int> pilha;
-    // stack<t_token> pilhaTipo;
+    stack<t_token> pilhaTipo;
     pilha.push(gtoken_end);
     pilha.push(0);
 
@@ -463,7 +461,7 @@ void sintax_analysis(vector<t_token> tokens_and_data)
 
     while (!pilha.empty())
     {
-        token_type source = tokens[ip];
+        token_type source = tokens[ip].type;
         if (ip >= tokens.size())
             source = gtoken_end;
 
@@ -486,9 +484,9 @@ void sintax_analysis(vector<t_token> tokens_and_data)
 
             for (const auto &pair : action)
             {
-                task = pair.first;       
+                task = pair.first;
                 next_state = pair.second;
-                break;                   
+                break;
             }
             // exit(1);
 
@@ -527,7 +525,7 @@ void sintax_analysis(vector<t_token> tokens_and_data)
                             continue;
                         ip--;
                         cout << "\033[31m Erro sintatico\n \033[0m";
-                        cout << "faltando: " << get_token_type_name(source) << " l:" << tokens_and_data[ip].line << " c:" << tokens_and_data[ip].col << " info:" << tokens_and_data[ip].data << endl;
+                        cout << "faltando: " << get_token_type_name(source) << " l:" << tokens[ip].line << " c:" << tokens[ip].col << " info:" << tokens[ip].data << endl;
                     }
                     else if (entry[0] == 'R')
                         goto aqui;
@@ -551,7 +549,7 @@ void sintax_analysis(vector<t_token> tokens_and_data)
                 if (source == stateTable.at(next_state).find(source)->first)
                 {
                     cout << "\033[31m Erro sintatico\n \033[0m";
-                    cout << "faltando: " << get_token_type_name(stateTable[current_state].begin()->first) << " l:" << tokens_and_data[ip].line << " c:" << tokens_and_data[ip].col << " info:" << tokens_and_data[ip].data << endl;
+                    cout << "faltando: " << get_token_type_name(stateTable[current_state].begin()->first) << " l:" << tokens[ip].line << " c:" << tokens[ip].col << " info:" << tokens[ip].data << endl;
                     pilha.push(stateTable[current_state].begin()->first);
                     pilha.push(next_state);
                     current_state = next_state;
@@ -560,7 +558,7 @@ void sintax_analysis(vector<t_token> tokens_and_data)
                 {
                     ip++;
                     cout << "\033[31m Erro sintatico\n \033[0m";
-                    cout << "inesperado: " << get_token_type_name(source) << " l:" << tokens_and_data[ip].line << " c:" << tokens_and_data[ip].col << " info" << tokens_and_data[ip].data << endl;
+                    cout << "inesperado: " << get_token_type_name(source) << " l:" << tokens[ip].line << " c:" << tokens[ip].col << " info:" << tokens[ip].data << endl;
                 }
                 // cout << current_state << endl;
                 // print_stack(pilha);
@@ -597,10 +595,15 @@ void sintax_analysis(vector<t_token> tokens_and_data)
             current_state = next_state;
             pilha.push(source);
             pilha.push(next_state);
+            pilhaTipo.push(tokens[ip]);
             ip++;
         }
         if (task == 'R')
         {
+            print_stack(pilha);
+            cout << "=========================================================\n";
+            print_stack(pilhaTipo);
+            cout << "---------------------------------------------------------\n";
             /*
             pilha com token/tipo
             .size() <- tokens q devem ser considerados (num de parametros)
@@ -614,18 +617,20 @@ void sintax_analysis(vector<t_token> tokens_and_data)
             pilha.push({tipo, productions[next_state].red});
             */
 
-            // print_stack(pilha);
-            for (int i = 0; i < 2 * productions[next_state].derivados.size(); i++)
+            vector<t_token> params;
+            for (int i = 0; i < productions[next_state].derivados.size(); i++)
             {
-                pilha.pop();
-                
-                // print_stack(pilha);
-                // cout << "=========================================================\n";
+                params.push_back(pilhaTipo.top());
+                pilhaTipo.pop();
             }
+
+            for (int i = 0; i < 2 * productions[next_state].derivados.size(); i++)
+                pilha.pop();
 
             current_state = pilha.top();
 
             pilha.push(productions[next_state].red);
+            pilhaTipo.push(actions[0](params));
             // cout << "=========================================================\n";
             // print_stack(pilha);
 
