@@ -49,7 +49,7 @@ Semantico::Semantico() {
         // {20, {gtoken_expression, {token_par_esq, gtoken_logic, token_par_dir}}},
         {20,[this](std::vector<t_token> tokens)  ->  t_token { tokens[0].type = gtoken_expression; return tokens[0];}},
         // {21, {gtoken_logic, {gtoken_logic, gtoken_op_logic, gtoken_bool_op}}},
-        /////////////////
+        {21, [this](std::vector<t_token> tokens) -> t_token { tokens[0].type = BoolCoercion(tokens[0], tokens[2]); return tokens[0]; }},
         // {22, {gtoken_logic, {gtoken_bool_op}}},
         {22, [this](std::vector<t_token> tokens) -> t_token { return tokens[0]; }},
         // {23, {gtoken_bool_op, {gtoken_relacional}}},
@@ -57,7 +57,7 @@ Semantico::Semantico() {
         // {24, {gtoken_bool_op, {token_not, gtoken_relacional}}},
         {24, [this](std::vector<t_token> tokens) -> t_token { return tokens[1]; }},
         // {25, {gtoken_relacional, {gtoken_relacional, gtoken_op_rel, gtoken_relacional_op}}},
-        ///////////////////// so int
+        {25, [this](std::vector<t_token> tokens) -> t_token { tokens[0].type = BoolCoercion(tokens[0], tokens[2]); return tokens[0]; }},
         // {26, {gtoken_relacional, {gtoken_relacional_op}}},
         {26, [this](std::vector<t_token> tokens) -> t_token { return tokens[0]; }},
         // {27, {gtoken_relacional_op, {gtoken_expr}}},
@@ -65,11 +65,11 @@ Semantico::Semantico() {
         // {28, {gtoken_relacional_op, {token_par_esq, gtoken_relacional, token_par_dir}}},
         {28, [this](std::vector<t_token> tokens) -> t_token { return tokens[1]; }},
         // {29, {gtoken_expr, {gtoken_expr, gtoken_op_art_pr, gtoken_term}}},
-        ////////////
+        {29, [this](std::vector<t_token> tokens) -> t_token { tokens[0].type = Coercion(tokens[0], tokens[2]); return tokens[0]; }},
         // {30, {gtoken_expr, {gtoken_term}}},
         {30, [this](std::vector<t_token> tokens) -> t_token { return tokens[0]; }},
         // {31, {gtoken_term, {gtoken_term, gtoken_op_art_sc, gtoken_factor}}},
-        //////////
+        {31, [this](std::vector<t_token> tokens) -> t_token { tokens[0].type = Coercion(tokens[0], tokens[2]); return tokens[0]; }},
         // {32, {gtoken_term, {gtoken_factor}}},
         {32, [this](std::vector<t_token> tokens) -> t_token { return tokens[0]; }},
         // {33, {gtoken_factor, {token_par_esq, gtoken_expr, token_par_dir}}},
@@ -142,10 +142,25 @@ void Semantico::readTable() {
 }
 
 token_type Semantico::Coercion(t_token left, t_token right) {
-    if(left.type == right.type){
+    if (left.type == right.type) {
         return left.type;
     }
-    
+
+    if (left.type == token_string || right.type == token_string) {
+
+    }
+
+    if (left.type == token_float || right.type == token_float) {
+        return token_float;
+    }
+}
+
+token_type Semantico::BoolCoercion(t_token left, t_token right) {
+    if (left.type == token_string || right.type == token_string) {
+
+    }
+
+    return token_int;
 }
 
 token_type Semantico::getSymbolType(std::string name) {

@@ -23,7 +23,7 @@ private:
     token_type getSymbolType(std::string name);
     bool checkAssignment(t_token left, t_token right);
     token_type Coercion(t_token left, t_token right);
-
+    token_type BoolCoercion(t_token left, t_token right);
 };
 
 #endif // SEMANTICO_H
