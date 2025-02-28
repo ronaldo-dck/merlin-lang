@@ -7,8 +7,9 @@
 #include <map>
 #include "token.h"
 #include "productions.h"
-#include "actions.h"
+#include "semantico.h"
 #include "state_table.h"
+#include "utils.h"
 using namespace std;
 
 token_type get_token(string lexema)
@@ -111,7 +112,7 @@ vector<t_token> lexical_analysis(string filename)
                 tmp += c;
             }
 
-            tokens.push_back({token_string, tmp, line + 1, pos + 1});
+            tokens.push_back({ token_string, tmp, line + 1, pos + 1 });
             continue;
         }
 
@@ -177,7 +178,7 @@ vector<t_token> lexical_analysis(string filename)
                         c = inputFile.get();
                         pos++;
                     }
-                    tokens.push_back({token_float, tmp, line + 1, pos + 1});
+                    tokens.push_back({ token_float, tmp, line + 1, pos + 1 });
                     inputFile.seekg(-1, ios::cur);
                     pos--;
                     continue;
@@ -191,7 +192,7 @@ vector<t_token> lexical_analysis(string filename)
             }
             else
             {
-                tokens.push_back({token_int, tmp, line + 1, pos + 1});
+                tokens.push_back({ token_int, tmp, line + 1, pos + 1 });
                 inputFile.seekg(-1, ios::cur);
                 pos--;
                 continue;
@@ -210,7 +211,7 @@ vector<t_token> lexical_analysis(string filename)
                 c = inputFile.get();
                 pos++;
             }
-            tokens.push_back({get_token(tmp), tmp, line + 1, pos + 1});
+            tokens.push_back({ get_token(tmp), tmp, line + 1, pos + 1 });
             inputFile.seekg(-1, ios::cur);
             pos--;
             continue;
@@ -218,7 +219,7 @@ vector<t_token> lexical_analysis(string filename)
 
         if (c == ';' || c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '&' || c == '!' || c == '=' || c == '<' || c == '>' || c == ':' || c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}')
         {
-            tokens.push_back({get_op_or_del(c), "", line + 1, pos + 1});
+            tokens.push_back({ get_op_or_del(c), "", line + 1, pos + 1 });
             continue;
         }
 
@@ -231,138 +232,138 @@ vector<t_token> lexical_analysis(string filename)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-const char *get_token_type_name(token_type type)
-{
-    switch (type)
-    {
-    case token_id:
-        return "ID";
-    case token_int:
-        return "Integer";
-    case token_float:
-        return "Float";
-    case token_string:
-        return "String";
-    case token_ignore:
-        return "Ignore";
-    case token_if:
-        return "If";
-    case token_type_int:
-        return "Type Integer";
-    case token_type_float:
-        return "Type Float";
-    case token_type_string:
-        return "Type String";
-    case token_for:
-        return "For";
-    case token_while:
-        return "While";
-    case token_summon:
-        return "Summon";
-    case token_echo:
-        return "Echo";
-    case token_tome:
-        return "Tome";
-    case token_ingredients:
-        return "Ingredients";
-    case token_endline:
-        return "Endline";
-    case token_add:
-        return "Add";
-    case token_sub:
-        return "Subtract";
-    case token_mul:
-        return "Multiply";
-    case token_div:
-        return "Divide";
-    case token_or:
-        return "Or";
-    case token_and:
-        return "And";
-    case token_not:
-        return "Not";
-    case token_eq:
-        return "Equal";
-    case token_le:
-        return "Less";
-    case token_gr:
-        return "Greater";
-    case token_atr:
-        return "Assign";
-    case token_par_esq:
-        return "Left Parenthesis";
-    case token_par_dir:
-        return "Right Parenthesis";
-    case token_col_esq:
-        return "Left Colon";
-    case token_col_dir:
-        return "Right Colon";
-    case token_chv_esq:
-        return "Left Brace";
-    case token_chv_dir:
-        return "Right Brace";
-    case gtoken_program:
-        return "Program";
-    case gtoken_cmd_init:
-        return "cmd_Initialize";
-    case gtoken_declare_sq:
-        return "Declare-sq";
-    case gtoken_cmd_sq:
-        return "Command-sq";
-    case gtoken_operation:
-        return "Operation";
-    case gtoken_assign_sq:
-        return "Assign-sq";
-    case gtoken_for_sq:
-        return "For-sq";
-    case gtoken_summon_sq:
-        return "Summon-sq";
-    case gtoken_echo_sq:
-        return "Echo-sq";
-    case gtoken_control:
-        return "Control";
-    case gtoken_control_struc:
-        return "Control Structure";
-    case gtoken_block:
-        return "Block";
-    case gtoken_expression:
-        return "Expression";
-    case gtoken_logic:
-        return "Logic";
-    case gtoken_bool_op:
-        return "Boolean Operator";
-    case gtoken_relacional:
-        return "Relational";
-    case gtoken_relacional_op:
-        return "Relational Operator";
-    case gtoken_expr:
-        return "Expression";
-    case gtoken_term:
-        return "Term";
-    case gtoken_factor:
-        return "Factor";
-    case gtoken_id:
-        return "Identifier";
-    case gtoken_op_logic:
-        return "Logic Operator";
-    case gtoken_op_rel:
-        return "Relational Operator";
-    case gtoken_op_art_pr:
-        return "Arithmetic Operator (Primary)";
-    case gtoken_op_art_sc:
-        return "Arithmetic Operator (Secondary)";
-    case gtoken_value:
-        return "Value";
-    case gtoken_type:
-        return "Type";
-    case gtoken_end:
-        return "End";
-    default:
-        return "Error";
-    }
-}
+// const char *get_token_type_name(token_type type)
+// {
+//     switch (type)
+//     {
+//     case token_id:
+//         return "ID";
+//     case token_int:
+//         return "Integer";
+//     case token_float:
+//         return "Float";
+//     case token_string:
+//         return "String";
+//     case token_ignore:
+//         return "Ignore";
+//     case token_if:
+//         return "If";
+//     case token_type_int:
+//         return "Type Integer";
+//     case token_type_float:
+//         return "Type Float";
+//     case token_type_string:
+//         return "Type String";
+//     case token_for:
+//         return "For";
+//     case token_while:
+//         return "While";
+//     case token_summon:
+//         return "Summon";
+//     case token_echo:
+//         return "Echo";
+//     case token_tome:
+//         return "Tome";
+//     case token_ingredients:
+//         return "Ingredients";
+//     case token_endline:
+//         return "Endline";
+//     case token_add:
+//         return "Add";
+//     case token_sub:
+//         return "Subtract";
+//     case token_mul:
+//         return "Multiply";
+//     case token_div:
+//         return "Divide";
+//     case token_or:
+//         return "Or";
+//     case token_and:
+//         return "And";
+//     case token_not:
+//         return "Not";
+//     case token_eq:
+//         return "Equal";
+//     case token_le:
+//         return "Less";
+//     case token_gr:
+//         return "Greater";
+//     case token_atr:
+//         return "Assign";
+//     case token_par_esq:
+//         return "Left Parenthesis";
+//     case token_par_dir:
+//         return "Right Parenthesis";
+//     case token_col_esq:
+//         return "Left Colon";
+//     case token_col_dir:
+//         return "Right Colon";
+//     case token_chv_esq:
+//         return "Left Brace";
+//     case token_chv_dir:
+//         return "Right Brace";
+//     case gtoken_program:
+//         return "Program";
+//     case gtoken_cmd_init:
+//         return "cmd_Initialize";
+//     case gtoken_declare_sq:
+//         return "Declare-sq";
+//     case gtoken_cmd_sq:
+//         return "Command-sq";
+//     case gtoken_operation:
+//         return "Operation";
+//     case gtoken_assign_sq:
+//         return "Assign-sq";
+//     case gtoken_for_sq:
+//         return "For-sq";
+//     case gtoken_summon_sq:
+//         return "Summon-sq";
+//     case gtoken_echo_sq:
+//         return "Echo-sq";
+//     case gtoken_control:
+//         return "Control";
+//     case gtoken_control_struc:
+//         return "Control Structure";
+//     case gtoken_block:
+//         return "Block";
+//     case gtoken_expression:
+//         return "Expression";
+//     case gtoken_logic:
+//         return "Logic";
+//     case gtoken_bool_op:
+//         return "Boolean Operator";
+//     case gtoken_relacional:
+//         return "Relational";
+//     case gtoken_relacional_op:
+//         return "Relational Operator";
+//     case gtoken_expr:
+//         return "Expression";
+//     case gtoken_term:
+//         return "Term";
+//     case gtoken_factor:
+//         return "Factor";
+//     case gtoken_id:
+//         return "Identifier";
+//     case gtoken_op_logic:
+//         return "Logic Operator";
+//     case gtoken_op_rel:
+//         return "Relational Operator";
+//     case gtoken_op_art_pr:
+//         return "Arithmetic Operator (Primary)";
+//     case gtoken_op_art_sc:
+//         return "Arithmetic Operator (Secondary)";
+//     case gtoken_value:
+//         return "Value";
+//     case gtoken_type:
+//         return "Type";
+//     case gtoken_end:
+//         return "End";
+//     default:
+//         return "Error";
+//     }
+// }
 
-std::map<char, int> get_action(const std::string &input)
+std::map<char, int> get_action(const std::string& input)
 {
     std::string numberStr; // Para armazenar a parte numérica
     int number = 0;        // Para armazenar o número final
@@ -400,7 +401,7 @@ std::map<char, int> get_action(const std::string &input)
     }
 
     // Inicializa o mapa corretamente
-    std::map<char, int> action = {{a, number}};
+    std::map<char, int> action = { {a, number} };
     return action;
 }
 
@@ -449,7 +450,7 @@ void sintax_analysis(vector<t_token> tokens)
 {
     StateTable stateTable = initStateTable();
     ProductionsMap productions = initProductions();
-    ActionsMap actions = initActions();
+    Semantico semantic = Semantico();
 
     stack<int> pilha;
     stack<t_token> pilhaTipo;
@@ -471,7 +472,7 @@ void sintax_analysis(vector<t_token> tokens)
         {
             entry = stateTable.at(current_state).at(source);
         }
-        catch (const std::out_of_range &oor)
+        catch (const std::out_of_range& oor)
         {
             entry = stateTable[current_state].begin()->second;
         aqui:
@@ -482,7 +483,7 @@ void sintax_analysis(vector<t_token> tokens)
             char task;
             int next_state;
 
-            for (const auto &pair : action)
+            for (const auto& pair : action)
             {
                 task = pair.first;
                 next_state = pair.second;
@@ -513,7 +514,7 @@ void sintax_analysis(vector<t_token> tokens)
 
                 // print_stack(pilha);
 
-                for (const auto &pair : stateTable[current_state])
+                for (const auto& pair : stateTable[current_state])
                 {
                     // cout << get_token_type_name(pair.first) << " " << pair.second << endl;
 
@@ -575,6 +576,9 @@ void sintax_analysis(vector<t_token> tokens)
          */
         if (entry == "ACEITA")
         {
+
+            // Call the destructor of the Semantico class
+            semantic.readTable();
             cout << "parser finalizado\n";
             exit(0);
         }
@@ -583,7 +587,7 @@ void sintax_analysis(vector<t_token> tokens)
         char task;
         int next_state;
 
-        for (const auto &pair : action)
+        for (const auto& pair : action)
         {
             task = pair.first;        // Atribui a chave à variável key
             next_state = pair.second; // Atribui o valor à variável value
@@ -600,10 +604,10 @@ void sintax_analysis(vector<t_token> tokens)
         }
         if (task == 'R')
         {
-            print_stack(pilha);
-            cout << "=========================================================\n";
-            print_stack(pilhaTipo);
-            cout << "---------------------------------------------------------\n";
+            // print_stack(pilha);
+            // cout << "=========================================================\n";
+            // print_stack(pilhaTipo);
+            // cout << "---------------------------------------------------------\n";
             /*
             pilha com token/tipo
             .size() <- tokens q devem ser considerados (num de parametros)
@@ -624,13 +628,15 @@ void sintax_analysis(vector<t_token> tokens)
                 pilhaTipo.pop();
             }
 
+            reverse(params.begin(), params.end());
+
             for (int i = 0; i < 2 * productions[next_state].derivados.size(); i++)
                 pilha.pop();
 
             current_state = pilha.top();
 
             pilha.push(productions[next_state].red);
-            pilhaTipo.push(actions[0](params));
+            pilhaTipo.push(semantic.actions[next_state](params));
             // cout << "=========================================================\n";
             // print_stack(pilha);
 
@@ -649,7 +655,7 @@ void sintax_analysis(vector<t_token> tokens)
     }
 }
 
-int main(int argc, char const *argv[2])
+int main(int argc, char const* argv[2])
 {
     string filename = argc > 1 ? argv[1] : "overview.ml";
     sintax_analysis(lexical_analysis(filename));
