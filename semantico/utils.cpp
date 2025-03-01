@@ -139,3 +139,17 @@ const char *get_token_type_name(token_type type)
         return "Error";
     }
 }
+
+
+std::string get_type_TAC(token_type type)
+{
+    if (type == 1)
+        return " i32 ";
+    if (type == 2)
+        return " f32 ";
+    if (type == 3)
+        return " str ";
+
+
+    return " i32 ";
+};

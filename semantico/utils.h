@@ -9,5 +9,7 @@
 
 const char *get_token_type_name(token_type type);
 
+std::string get_type_TAC(token_type type);
+
 
 #endif // UTILS_H

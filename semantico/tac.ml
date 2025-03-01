@@ -1,8 +1,16 @@
-tome tomename {
-    ingredients {
-        int numero : 0;  
-        float naoinicializado : 0.0; 
-        int[3] vetorexemplo;
+
+numero: i32 = 0
+naoinicializado: f32 = 0.0  
+
+vetorexemplo_1: i32 = 0
+vetorexemplo_2: i32 = 0
+vetorexemplo_3: i32 = 0
+texto: str = "abc"
+
+
+
+
+        int[3] vetorexemplo;    
         string texto : "abc";
         int i;
     }

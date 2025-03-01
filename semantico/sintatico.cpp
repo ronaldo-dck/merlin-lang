@@ -576,10 +576,10 @@ void sintax_analysis(vector<t_token> tokens)
          */
         if (entry == "ACEITA")
         {
-
-            // Call the destructor of the Semantico class
-            semantic.readTable();
-            cout << "parser finalizado\n";
+            if (semantic.success)
+                cout << "Compilação finalizada com sucesso.\n";
+            else
+                cout << "Compilação interrompida por erros.\n";
             exit(0);
         }
 
@@ -609,16 +609,13 @@ void sintax_analysis(vector<t_token> tokens)
             // print_stack(pilhaTipo);
             // cout << "---------------------------------------------------------\n";
             /*
-            pilha com token/tipo
-            .size() <- tokens q devem ser considerados (num de parametros)
-                -> [param1, param2, ...] pop()
+            class semantico < code
+            semantic.algumacoisa(next_state)
+                -> actions
+                -> code
 
-            tipo = actions[next_state](...parametros)
-
-            _ t_type_int t_id t_atr t_int
-            _ int t_id t_atr int
-
-            pilha.push({tipo, productions[next_state].red});
+            erro sintático encerra o semântico
+            erro semântico encerra geração de código
             */
 
             vector<t_token> params;
@@ -636,7 +633,7 @@ void sintax_analysis(vector<t_token> tokens)
             current_state = pilha.top();
 
             pilha.push(productions[next_state].red);
-            pilhaTipo.push(semantic.actions[next_state](params));
+            pilhaTipo.push(semantic.execute(next_state, params));
             // cout << "=========================================================\n";
             // print_stack(pilha);
 
