@@ -6,11 +6,6 @@
 #include <unordered_map>
 #include "token.h"
 
-// struct entry {
-//     token_type type;
-//     /* data, used ..... */
-// };
-
 class Semantico {
 public:
     Semantico();  // Constructor
