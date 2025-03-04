@@ -76,6 +76,8 @@ struct t_token {
     std::string data;
     int line;
     int col;
+    int counter = 0;
+    int index = 0;
 };
 
 // Estrutura para representar uma produção

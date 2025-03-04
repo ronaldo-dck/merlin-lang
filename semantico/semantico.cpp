@@ -11,7 +11,14 @@
 
 t_token Semantico::execute(int next_state, std::vector<t_token> tokens) {
     t_token token = actions[next_state](tokens);
-    code[next_state](tokens);
+
+    try {
+        code[next_state](tokens);
+    }
+    catch (const std::out_of_range& oor) {
+        std::cout << "Error in state: " << next_state << std::endl;
+    }
+
     return token;
 }
 
@@ -53,15 +60,15 @@ Semantico::Semantico() {
         // {16, {gtoken_control, {gtoken_control_struc, gtoken_expression, gtoken_block}}},
         {16,LAMBDAFUNC->t_token { tokens[0].type = gtoken_control; return tokens[0];}},
         // {17, {gtoken_control_struc, {token_if}}},
-        {17,LAMBDAFUNC->t_token { tokens[0].type = gtoken_control_struc; return tokens[0];}},
+        {17,LAMBDAFUNC->t_token { return tokens[0];}},
         // {18, {gtoken_control_struc, {token_while}}},
-        {18,LAMBDAFUNC->t_token { tokens[0].type = gtoken_control_struc; return tokens[0];}},
+        {18,LAMBDAFUNC->t_token { return tokens[0];}},
         // {19, {gtoken_block, {token_chv_esq, gtoken_cmd_sq, token_chv_dir}}},
         {19,LAMBDAFUNC->t_token { tokens[0].type = gtoken_block; return tokens[0];}},
         // {20, {gtoken_expression, {token_par_esq, gtoken_logic, token_par_dir}}},
         {20,LAMBDAFUNC->t_token { tokens[0].type = gtoken_expression; return tokens[0];}},
         // {21, {gtoken_logic, {gtoken_logic, gtoken_op_logic, gtoken_bool_op}}},
-        {21,LAMBDAFUNC->t_token { tokens[0].type = BoolCoercion(tokens[0], tokens[2]); return tokens[0]; }},
+        {21,LAMBDAFUNC->t_token { tokens[0].type = BoolCoercion(tokens[0], tokens[2]); tokens[0].counter = globalCounter; return tokens[0]; }},
         // {22, {gtoken_logic, {gtoken_bool_op}}},
         {22,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {23, {gtoken_bool_op, {gtoken_relacional}}},
@@ -69,7 +76,7 @@ Semantico::Semantico() {
         // {24, {gtoken_bool_op, {token_not, gtoken_relacional}}},
         {24,LAMBDAFUNC->t_token { return tokens[1]; }},
         // {25, {gtoken_relacional, {gtoken_relacional, gtoken_op_rel, gtoken_relacional_op}}},
-        {25,LAMBDAFUNC->t_token { tokens[0].type = BoolCoercion(tokens[0], tokens[2]); return tokens[0]; }},
+        {25,LAMBDAFUNC->t_token { tokens[0].type = BoolCoercion(tokens[0], tokens[2]); tokens[0].counter = globalCounter; return tokens[0]; }},
         // {26, {gtoken_relacional, {gtoken_relacional_op}}},
         {26,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {27, {gtoken_relacional_op, {gtoken_expr}}},
@@ -77,11 +84,11 @@ Semantico::Semantico() {
         // {28, {gtoken_relacional_op, {token_par_esq, gtoken_relacional, token_par_dir}}},
         {28,LAMBDAFUNC->t_token { return tokens[1]; }},
         // {29, {gtoken_expr, {gtoken_expr, gtoken_op_art_pr, gtoken_term}}},
-        {29,LAMBDAFUNC->t_token { tokens[0].type = Coercion(tokens[0], tokens[2]); return tokens[0]; }},
+        {29,LAMBDAFUNC->t_token { tokens[0].type = Coercion(tokens[0], tokens[2]); tokens[0].counter = globalCounter; return tokens[0]; }},
         // {30, {gtoken_expr, {gtoken_term}}},
         {30,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {31, {gtoken_term, {gtoken_term, gtoken_op_art_sc, gtoken_factor}}},
-        {31,LAMBDAFUNC->t_token { tokens[0].type = Coercion(tokens[0], tokens[2]); return tokens[0]; }},
+        {31,LAMBDAFUNC->t_token { tokens[0].type = Coercion(tokens[0], tokens[2]); tokens[0].counter = globalCounter; return tokens[0]; }},
         // {32, {gtoken_term, {gtoken_factor}}},
         {32,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {33, {gtoken_factor, {token_par_esq, gtoken_expr, token_par_dir}}},
@@ -95,23 +102,23 @@ Semantico::Semantico() {
         // {37, {gtoken_id, {token_id, token_col_esq, token_int, token_col_dir}}},
         {37,LAMBDAFUNC->t_token { tokens[0].data += "_" + tokens[2].data; tokens[0].type = getSymbolType(tokens[0].data); return tokens[0]; }},
         // {38, {gtoken_op_logic, {token_and}}},
-        {38,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_logic; return tokens[0]; }},
+        {38,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {39, {gtoken_op_logic, {token_or}}},
-        {39,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_logic; return tokens[0]; }},
+        {39,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {40, {gtoken_op_rel, {token_gr}}},
-        {40,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_rel; return tokens[0]; }},
+        {40,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {41, {gtoken_op_rel, {token_le}}},
-        {41,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_rel; return tokens[0]; }},
+        {41,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {42, {gtoken_op_rel, {token_eq}}},
-        {42,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_rel; return tokens[0]; }},
+        {42,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {43, {gtoken_op_art_pr, {token_add}}},
-        {43,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_art_pr; return tokens[0]; }},
+        {43,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {44, {gtoken_op_art_pr, {token_sub}}},
-        {44,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_art_pr; return tokens[0]; }},
+        {44,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {45, {gtoken_op_art_sc, {token_mul}}},
-        {45,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_art_sc; return tokens[0]; }},
+        {45,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {46, {gtoken_op_art_sc, {token_div}}},
-        {46,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_art_sc; return tokens[0]; }},
+        {46,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {47, {gtoken_value, {token_int}}},
         {47,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {48, {gtoken_value, {token_float}}},
@@ -133,7 +140,7 @@ Semantico::Semantico() {
         // {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
         {56,LAMBDAFUNC->t_token { checkAssignment(tokens[0], tokens[3]); insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
         // {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
-        {57,LAMBDAFUNC->t_token { tokens[0].data += "_0"; return tokens[0]; } },
+        { 57,LAMBDAFUNC->t_token { tokens[0].data += "_0"; tokens[0].index = indexCounter; tokens[0].type = getSymbolType(tokens[0].data); return tokens[0]; } },
         // {58, {gtoken_cmd_sq, {gtoken_operation, token_endline}}},
         {58,LAMBDAFUNC->t_token { tokens[0].type = gtoken_cmd_sq; return tokens[0]; }},
         // {59, {gtoken_cmd_sq, {}}},
@@ -154,7 +161,7 @@ Semantico::Semantico() {
         // {3, {gtoken_declare_sq, {gtoken_type, token_id, token_endline, gtoken_declare_sq}}},
         {3,LAMBDAFUNC  -> void {int index = std::stoi(tokens[0].data); for (int i = index - 1; i >= 0; i--) std::cout << tokens[1].data << "_" << i << ": " << get_type_TAC(tokens[0].type) << "= 0" << std::endl;}},
         // {4, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline, gtoken_declare_sq}}},
-        {4,LAMBDAFUNC  -> void {tokens[0].type == token_string ? std::cout << tokens[1].data << ':' << get_type_TAC(tokens[0].type) << "=" << "\"" << tokens[3].data << "\"" << std::endl : std::cout << tokens[1].data << ':' << get_type_TAC(tokens[0].type) << "=" << tokens[3].data << std::endl;}},
+        {4,LAMBDAFUNC  -> void {tokens[0].type == token_string ? std::cout << tokens[1].data + "_0" << ':' << get_type_TAC(tokens[0].type) << "=" << "\"" << tokens[3].data << "\"" << std::endl : std::cout << tokens[1].data + "_0" << ':' << get_type_TAC(tokens[0].type) << "=" << tokens[3].data << std::endl;}},
         // {5, {gtoken_cmd_sq, {gtoken_operation, token_endline, gtoken_cmd_sq}}},
         {5,LAMBDAFUNC  -> void {}},
         // {6, {gtoken_operation, {gtoken_assign_sq}}},
@@ -168,7 +175,7 @@ Semantico::Semantico() {
         // {10, {gtoken_operation, {gtoken_echo_sq}}},
         {10,LAMBDAFUNC -> void {}},
         // {11, {gtoken_assign_sq, {token_id, token_atr, gtoken_logic}}},
-        {11,LAMBDAFUNC -> void {}},
+        {11,LAMBDAFUNC -> void {call_assign(tokens);}},
         // {12, {gtoken_for_sq, {token_for, token_par_esq, gtoken_assign_sq, token_endline, gtoken_logic, token_endline, token_int, token_par_dir, gtoken_block}}},
         {12,LAMBDAFUNC -> void {}},
         // {13, {gtoken_summon_sq, {token_summon, token_par_esq, gtoken_id, token_par_dir}}},
@@ -178,7 +185,7 @@ Semantico::Semantico() {
         // {15, {gtoken_echo_sq, {token_echo, token_par_esq, gtoken_id, token_par_dir}}},
         {15,LAMBDAFUNC -> void { call_echo(tokens); }},
         // {16, {gtoken_control, {gtoken_control_struc, gtoken_expression, gtoken_block}}},
-        {16,LAMBDAFUNC -> void {}},
+        {16,LAMBDAFUNC -> void { call_control(tokens); }},
         // {17, {gtoken_control_struc, {token_if}}},
         {17,LAMBDAFUNC -> void {}},
         // {18, {gtoken_control_struc, {token_while}}},
@@ -188,7 +195,7 @@ Semantico::Semantico() {
         // {20, {gtoken_expression, {token_par_esq, gtoken_logic, token_par_dir}}},
         {20,LAMBDAFUNC -> void {}},
         // {21, {gtoken_logic, {gtoken_logic, gtoken_op_logic, gtoken_bool_op}}},
-        {21,LAMBDAFUNC -> void {}},
+        {21,LAMBDAFUNC -> void { call_expression(tokens);}},
         // {22, {gtoken_logic, {gtoken_bool_op}}},
         {22,LAMBDAFUNC -> void {}},
         // {23, {gtoken_bool_op, {gtoken_relacional}}},
@@ -196,7 +203,7 @@ Semantico::Semantico() {
         // {24, {gtoken_bool_op, {token_not, gtoken_relacional}}},
         {24,LAMBDAFUNC -> void {}},
         // {25, {gtoken_relacional, {gtoken_relacional, gtoken_op_rel, gtoken_relacional_op}}},
-        {25,LAMBDAFUNC -> void {}},
+        {25,LAMBDAFUNC -> void { call_expression(tokens);}},
         // {26, {gtoken_relacional, {gtoken_relacional_op}}},
         {26,LAMBDAFUNC -> void {}},
         // {27, {gtoken_relacional_op, {gtoken_expr}}},
@@ -204,11 +211,11 @@ Semantico::Semantico() {
         // {28, {gtoken_relacional_op, {token_par_esq, gtoken_relacional, token_par_dir}}},
         {28,LAMBDAFUNC -> void {}},
         // {29, {gtoken_expr, {gtoken_expr, gtoken_op_art_pr, gtoken_term}}},
-        {29,LAMBDAFUNC -> void {}},
+        {29,LAMBDAFUNC -> void { call_expression(tokens);}},
         // {30, {gtoken_expr, {gtoken_term}}},
         {30,LAMBDAFUNC -> void {}},
         // {31, {gtoken_term, {gtoken_term, gtoken_op_art_sc, gtoken_factor}}},
-        {31,LAMBDAFUNC -> void {}},
+        {31,LAMBDAFUNC -> void { call_expression(tokens);}},
         // {32, {gtoken_term, {gtoken_factor}}},
         {32,LAMBDAFUNC -> void {}},
         // {33, {gtoken_factor, {token_par_esq, gtoken_expr, token_par_dir}}},
@@ -258,9 +265,9 @@ Semantico::Semantico() {
         // {55, {gtoken_declare_sq, {gtoken_type, token_id, token_endline}}},
         { 55,LAMBDAFUNC -> void {int index = std::stoi(tokens[0].data); for (int i = index - 1; i >= 0; i--) std::cout << tokens[1].data << "_" << i << ": " << get_type_TAC(tokens[0].type) << "= 0" << std::endl;} },
         // {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
-        {56,LAMBDAFUNC -> void {tokens[0].type == token_string ? std::cout << tokens[1].data << ':' << get_type_TAC(tokens[0].type) << "=" << "\"" << tokens[3].data << "\"" << std::endl : std::cout << tokens[1].data << ':' << get_type_TAC(tokens[0].type) << "=" << tokens[3].data << std::endl;}},
+        {56,LAMBDAFUNC -> void {tokens[0].type == token_string ? std::cout << tokens[1].data + "_0" << ':' << get_type_TAC(tokens[0].type) << "=" << "\"" << tokens[3].data << "\"" << std::endl : std::cout << tokens[1].data + "_0" << ':' << get_type_TAC(tokens[0].type) << "=" << tokens[3].data << std::endl;}},
         // {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
-        {57,LAMBDAFUNC -> void {std::cout << "aux_" + std::to_string(globalCounter) << ": i32 = " << tokens[2].data << "_0" << std::endl;}},
+        {57,LAMBDAFUNC -> void {std::cout << "auxPtr_" + std::to_string(indexCounter++) << ": i32 = " << tokens[2].data << "_0 * 4" << std::endl;}},
         // {58, {gtoken_cmd_sq, {gtoken_operation, token_endline}}},
         {58,LAMBDAFUNC -> void {}},
         // {59, {gtoken_cmd_sq, {}}},
@@ -289,57 +296,140 @@ void Semantico::readTable() {
     }
 }
 
-// {15, {gtoken_echo_sq, {token_echo, token_par_esq, gtoken_id, token_par_dir}}},
-void Semantico::call_echo(std::vector<t_token> tokens) {
+void Semantico::call_summon(std::vector<t_token> tokens) {
     token_type type = tokens[2].type;
     if (type == token_string) {
         std::cout << tokens[2].data << "= call read_string(100u32)" << std::endl;
         return;
     }
 
-    /*
-    precisa identificar o número da variavel se vetor
+    if (tokens[2].index)
+    {
+        if (type == token_float) {
+            std::cout << "&" << tokens[2].data << " + auxPtr_" << tokens[2].index << " = call read_float()" << std::endl;
+            return;
+        }
 
-    */
-
-
-    if (type == token_float) {
-        std::cout << tokens[2].data << "= call read_string(100u32)" << std::endl;
-        return;
+        if (type == token_int) {
+            std::cout << "&" << tokens[2].data << " + auxPtr_" << tokens[2].index << " = call read_float()" << std::endl;
+            return;
+        }
     }
+    else {
+        if (type == token_float) {
+            std::cout << tokens[2].data << " = call read_float()" << std::endl;
+            return;
+        }
 
-    if (type == token_int) {
-        std::cout << "call read_int(" << tokens[2].data << ")" << std::endl;
-        return;
+        if (type == token_int) {
+            std::cout << tokens[2].data << " = call read_int()" << std::endl;
+            return;
+        }
     }
-
-    std::cout << "call read_int(" << tokens[2].data << "aux" << globalCounter << ")" << std::endl;
 }
 
-void Semantico::call_summon(std::vector<t_token> tokens) {
+// {15, {gtoken_echo_sq, {token_echo, token_par_esq, gtoken_id, token_par_dir}}},
+void Semantico::call_echo(std::vector<t_token> tokens) {
     token_type type = tokens[2].type;
     if (type == token_string) {
         std::cout << "call write_string(" << tokens[2].data << ")" << std::endl;
         return;
     }
 
-    /*
-    precisa identificar o número da variavel se vetor
+    if (tokens[2].index)
+    {
+        if (type == token_float) {
+            std::cout << "call write_float(*" << tokens[2].data << " + auxPtr_" << tokens[2].index << ")" << std::endl;
+            return;
+        }
 
-    */
-
-
-    if (type == token_float) {
-        std::cout << "call write_float(" << tokens[2].data << ")" << std::endl;
-        return;
+        if (type == token_int) {
+            std::cout << "call write_int(*" << tokens[2].data << " + auxPtr_" << tokens[2].index << ")" << std::endl;
+            return;
+        }
     }
+    else {
+        if (type == token_float) {
+            std::cout << "call write_float(" << tokens[2].data << ")" << std::endl;
+            return;
+        }
 
-    if (type == token_int) {
-        std::cout << "call write_int(" << tokens[2].data << ")" << std::endl;
-        return;
+        if (type == token_int) {
+            std::cout << "call write_int(" << tokens[2].data << ")" << std::endl;
+            return;
+        }
     }
+}
 
-    std::cout << "call write_int(" << tokens[2].data << "aux" << globalCounter << ")" << std::endl;
+// {11, {gtoken_assign_sq, {token_id, token_atr, gtoken_logic}}},
+void Semantico::call_assign(std::vector<t_token> tokens) {
+    if (tokens[2].counter)
+        if (tokens[0].index)
+            std::cout << "&" << tokens[0].data << " + auxPtr_" << tokens[0].index << " = aux_" << tokens[2].counter << std::endl;
+        else
+            std::cout << tokens[0].data << " = aux_" << tokens[2].counter << std::endl;
+    else
+        if (tokens[0].index)
+            std::cout << "&" << tokens[0].data << " + auxPtr_" << tokens[0].index << " = " << tokens[2].data << std::endl;
+        else
+            std::cout << tokens[0].data << " = " << tokens[2].data << std::endl;
+}
+
+// {16, {gtoken_control, {gtoken_control_struc, gtoken_expression, gtoken_block}}},
+void Semantico::call_control(std::vector<t_token> tokens) {
+    if (tokens[0].data == "if") {
+        std::cout << "if " << tokens[1].data << " {" << std::endl;
+        std::cout << "}" << std::endl;
+    }
+    else if (tokens[0].data == "while") {
+        std::cout << "while " << tokens[1].data << " {" << std::endl;
+        std::cout << "}" << std::endl;
+    }
+}
+
+void Semantico::call_expression(std::vector<t_token> tokens) {
+    if (tokens[0].counter && tokens[2].counter) {
+        std::cout << "aux_" << globalCounter++ << " = aux_" << tokens[0].counter << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+    }
+    else if (tokens[0].counter)
+    {
+        if (tokens[2].index) {
+            int idxCounter2 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter2 << " = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << " = aux_" << tokens[0].counter << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+        }
+        else
+            std::cout << "aux_" << globalCounter++ << " = aux_" << tokens[0].counter << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+    }
+    else if (tokens[2].counter) {
+        if (tokens[0].index) {
+            int idxCounter1 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter1 << " = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+        }
+        else
+            std::cout << "aux_" << globalCounter++ << " = " << tokens[0].data << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+    }
+    else {
+        if (tokens[0].index && tokens[2].index) {
+            int idxCounter1 = indexCounter++, idxCounter2 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter1 << " = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "auxPtr_" << idxCounter2 << " = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+        }
+        else if (tokens[0].index) {
+            int idxCounter1 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter1 << " = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+        }
+        else if (tokens[2].index) {
+            int idxCounter2 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter2 << " = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << " = " << tokens[0].data << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+        }
+        else
+            std::cout << "aux_" << globalCounter++ << " = " << tokens[0].data << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+    }
 }
 
 token_type Semantico::Coercion(t_token left, t_token right) {
@@ -387,7 +477,7 @@ bool Semantico::insertSymbol(std::vector<t_token> tokens) {
     if (erro == 0)
         return true;
 
-    std::cout << "ERROR: symbo l " << tokens[1].data << " already exists" << std::endl;
+    std::cout << "ERROR: symbol " << tokens[1].data << " already exists" << std::endl;
     success = false;
     return false;
 }

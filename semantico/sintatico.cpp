@@ -219,7 +219,7 @@ vector<t_token> lexical_analysis(string filename)
 
         if (c == ';' || c == '+' || c == '-' || c == '*' || c == '/' || c == '|' || c == '&' || c == '!' || c == '=' || c == '<' || c == '>' || c == ':' || c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}')
         {
-            tokens.push_back({ get_op_or_del(c), "", line + 1, pos + 1 });
+            tokens.push_back({ get_op_or_del(c), string(1, c), line + 1, pos + 1 });
             continue;
         }
 

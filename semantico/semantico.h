@@ -26,8 +26,13 @@ private:
 
     void call_echo(std::vector<t_token>  tokens);
     void call_summon(std::vector<t_token>  tokens);
+    void call_assign(std::vector<t_token>  tokens);
+    void call_control(std::vector<t_token>  tokens);
+    void call_expression(std::vector<t_token>  tokens);
 
-    int globalCounter = 0;
+    int globalCounter = 1;
+    int indexCounter = 1;
+    int labelCounter = 1;
     std::vector<std::string> generatedCode;
 };
 
