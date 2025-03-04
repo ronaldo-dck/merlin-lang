@@ -17,12 +17,17 @@ public:
 
 private:
     std::unordered_map<std::string, token_type> symbolTable;
-    bool insertSymbol(std::string name, token_type type);
+    bool insertSymbol(std::vector<t_token> tokens);
     token_type getSymbolType(std::string name);
+
     bool checkAssignment(t_token left, t_token right);
     token_type Coercion(t_token left, t_token right);
     token_type BoolCoercion(t_token left, t_token right);
 
+    void call_echo(std::vector<t_token>  tokens);
+    void call_summon(std::vector<t_token>  tokens);
+
+    int globalCounter = 0;
     std::vector<std::string> generatedCode;
 };
 

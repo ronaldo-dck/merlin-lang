@@ -10,10 +10,6 @@ texto: str = "abc"
 
 
 
-        int[3] vetorexemplo;    
-        string texto : "abc";
-        int i;
-    }
 
     _ Exemplo de como preencher um vetor
     for (i : 0; i < 3; 1){

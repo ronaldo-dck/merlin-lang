@@ -437,6 +437,7 @@ void sintax_analysis(vector<t_token> tokens)
 
         if (entry == "ACEITA")
         {
+            // semantic.readTable();
             if (semantic.success)
                 cout << "Compilação finalizada com sucesso.\n";
             else
