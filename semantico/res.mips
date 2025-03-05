@@ -1,0 +1,22 @@
+i_0:  i32 = 0
+vetor2_1:  f32 = 0
+vetor2_0:  f32 = 0
+vetor_1:  i32 = 0
+vetor_0:  i32 = 0
+num1_0: str ="1"
+num_0: i32 =1
+numero1_0: f32 =0.0
+numero_0:  i32 = 0
+aux_1: bool  = numero_0 < 10
+aux_2: bool  = num_0 > 10
+aux_3: bool = aux_1 or aux_2
+if aux_3 goto label_1
+goto label_2
+
+label_1:
+aux_4: i32  = numero_0 * 2
+num_0: i32  = aux_4
+
+label_2:
+final
+Compilação finalizada com sucesso.

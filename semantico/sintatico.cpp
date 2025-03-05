@@ -324,6 +324,7 @@ void sintax_analysis(vector<t_token> tokens)
     pilha.push(gtoken_end);
     pilha.push(0);
 
+    int isFor = 0;
     int current_state = 0; // PARA TESTES em real sempre ZERO
     int ip = 0;
 
@@ -459,6 +460,14 @@ void sintax_analysis(vector<t_token> tokens)
         if (task == 'S')
         {
             current_state = next_state;
+            if (source == token_for)
+                isFor++;
+
+            if (isFor == 1 && source == token_endline) {
+                semantic.start_for();
+                isFor++;
+            }
+
             pilha.push(source);
             pilha.push(next_state);
             pilhaTipo.push(tokens[ip]);
@@ -483,6 +492,11 @@ void sintax_analysis(vector<t_token> tokens)
 
             pilha.push(productions[next_state].red);
             pilhaTipo.push(semantic.execute(next_state, params));
+
+            if (isFor == 2 && source == token_endline && pilha.top() == gtoken_logic) {
+                semantic.mid_for();
+                isFor = 0;
+            }
 
             auto entry = stateTable[current_state].at(productions[next_state].red);
             auto action = get_action(entry);

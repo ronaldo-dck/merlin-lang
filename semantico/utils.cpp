@@ -149,6 +149,8 @@ std::string get_type_TAC(token_type type)
         return " f32 ";
     if (type == 3)
         return " str ";
+    if (type == 33)
+        return " bool ";
 
 
     return " i32 ";

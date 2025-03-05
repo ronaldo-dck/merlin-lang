@@ -1,5 +1,11 @@
+/* 
+TODO:
+    geração de código em arquivo
+    parar geração de código ao encontrar erro semântico (variável success)
+    parar análise semântica ao encontrar erro sintático
 
-// MyClass.cpp
+*/
+
 #include "semantico.h"
 
 #include <iomanip>
@@ -106,11 +112,11 @@ Semantico::Semantico() {
         // {39, {gtoken_op_logic, {token_or}}},
         {39,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {40, {gtoken_op_rel, {token_gr}}},
-        {40,LAMBDAFUNC->t_token { return tokens[0]; }},
+        {40,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_rel; return tokens[0]; }},
         // {41, {gtoken_op_rel, {token_le}}},
-        {41,LAMBDAFUNC->t_token { return tokens[0]; }},
+        {41,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_rel; return tokens[0]; }},
         // {42, {gtoken_op_rel, {token_eq}}},
-        {42,LAMBDAFUNC->t_token { return tokens[0]; }},
+        {42,LAMBDAFUNC->t_token { tokens[0].type = gtoken_op_rel; return tokens[0]; }},
         // {43, {gtoken_op_art_pr, {token_add}}},
         {43,LAMBDAFUNC->t_token { return tokens[0]; }},
         // {44, {gtoken_op_art_pr, {token_sub}}},
@@ -177,7 +183,7 @@ Semantico::Semantico() {
         // {11, {gtoken_assign_sq, {token_id, token_atr, gtoken_logic}}},
         {11,LAMBDAFUNC -> void {call_assign(tokens);}},
         // {12, {gtoken_for_sq, {token_for, token_par_esq, gtoken_assign_sq, token_endline, gtoken_logic, token_endline, token_int, token_par_dir, gtoken_block}}},
-        {12,LAMBDAFUNC -> void {}},
+        {12,LAMBDAFUNC -> void {end_for(tokens);}},
         // {13, {gtoken_summon_sq, {token_summon, token_par_esq, gtoken_id, token_par_dir}}},
         {13,LAMBDAFUNC -> void { call_summon(tokens);}},
         // {14, {gtoken_echo_sq, {token_echo, token_par_esq, token_string, token_par_dir}}},
@@ -185,17 +191,17 @@ Semantico::Semantico() {
         // {15, {gtoken_echo_sq, {token_echo, token_par_esq, gtoken_id, token_par_dir}}},
         {15,LAMBDAFUNC -> void { call_echo(tokens); }},
         // {16, {gtoken_control, {gtoken_control_struc, gtoken_expression, gtoken_block}}},
-        {16,LAMBDAFUNC -> void { call_control(tokens); }},
+        {16,LAMBDAFUNC -> void { call_control_end(tokens); }},
         // {17, {gtoken_control_struc, {token_if}}},
-        {17,LAMBDAFUNC -> void {}},
+        {17,LAMBDAFUNC -> void { }},
         // {18, {gtoken_control_struc, {token_while}}},
-        {18,LAMBDAFUNC -> void {}},
+        {18,LAMBDAFUNC -> void {std::cout << std::endl << "label_" << labelCounter << ":" << std::endl; loopLabels.push(labelCounter++);}},
         // {19, {gtoken_block, {token_chv_esq, gtoken_cmd_sq, token_chv_dir}}},
         {19,LAMBDAFUNC -> void {}},
         // {20, {gtoken_expression, {token_par_esq, gtoken_logic, token_par_dir}}},
-        {20,LAMBDAFUNC -> void {}},
+        {20,LAMBDAFUNC -> void { call_control_start(tokens); }},
         // {21, {gtoken_logic, {gtoken_logic, gtoken_op_logic, gtoken_bool_op}}},
-        {21,LAMBDAFUNC -> void { call_expression(tokens);}},
+        {21,LAMBDAFUNC -> void { call_expression_bool(tokens);}},
         // {22, {gtoken_logic, {gtoken_bool_op}}},
         {22,LAMBDAFUNC -> void {}},
         // {23, {gtoken_bool_op, {gtoken_relacional}}},
@@ -267,7 +273,7 @@ Semantico::Semantico() {
         // {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
         {56,LAMBDAFUNC -> void {tokens[0].type == token_string ? std::cout << tokens[1].data + "_0" << ':' << get_type_TAC(tokens[0].type) << "=" << "\"" << tokens[3].data << "\"" << std::endl : std::cout << tokens[1].data + "_0" << ':' << get_type_TAC(tokens[0].type) << "=" << tokens[3].data << std::endl;}},
         // {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
-        {57,LAMBDAFUNC -> void {std::cout << "auxPtr_" + std::to_string(indexCounter++) << ": i32 = " << tokens[2].data << "_0 * 4" << std::endl;}},
+        {57,LAMBDAFUNC -> void {std::cout << "auxPtr_" + std::to_string(indexCounter++) << " = " << tokens[2].data << "_0 * 4" << std::endl;}},
         // {58, {gtoken_cmd_sq, {gtoken_operation, token_endline}}},
         {58,LAMBDAFUNC -> void {}},
         // {59, {gtoken_cmd_sq, {}}},
@@ -328,6 +334,29 @@ void Semantico::call_summon(std::vector<t_token> tokens) {
     }
 }
 
+void Semantico::start_for() {
+    std::cout << "label_" << labelCounter << ":" << std::endl;
+    loopLabels.push(labelCounter++);
+}
+
+void Semantico::mid_for() {
+    std::cout << "if aux_" << std::to_string(globalCounter - 1) << " goto label_" << labelCounter++ << std::endl;
+    std::cout << "goto label_" << labelCounter << std::endl << std::endl;
+    falseLabels.push(labelCounter++);
+    std::cout << "label_" << labelCounter - 2 << ":" << std::endl;
+}
+
+// {12, {gtoken_for_sq, {token_for, token_par_esq, gtoken_assign_sq, token_endline, gtoken_logic, token_endline, token_int, token_par_dir, gtoken_block}}},
+void Semantico::end_for(std::vector<t_token> tokens) {
+    std::cout << std::endl << tokens[2].data << " = " << tokens[2].data << " + " << tokens[6].data << std::endl;
+
+    std::cout << "goto label_" << loopLabels.top() << std::endl << std::endl;
+    loopLabels.pop();
+
+    std::cout << "label_" << falseLabels.top() << ":" << std::endl;
+    falseLabels.pop();
+}
+
 // {15, {gtoken_echo_sq, {token_echo, token_par_esq, gtoken_id, token_par_dir}}},
 void Semantico::call_echo(std::vector<t_token> tokens) {
     token_type type = tokens[2].type;
@@ -363,72 +392,150 @@ void Semantico::call_echo(std::vector<t_token> tokens) {
 
 // {11, {gtoken_assign_sq, {token_id, token_atr, gtoken_logic}}},
 void Semantico::call_assign(std::vector<t_token> tokens) {
+    if (tokens[2].type == token_bool)
+        tokens[0].type = token_bool;
+
     if (tokens[2].counter)
         if (tokens[0].index)
-            std::cout << "&" << tokens[0].data << " + auxPtr_" << tokens[0].index << " = aux_" << tokens[2].counter << std::endl;
+            std::cout << "&" << tokens[0].data << " + auxPtr_" << tokens[0].index << " = aux_" << tokens[2].counter << std::endl << std::endl;
         else
-            std::cout << tokens[0].data << " = aux_" << tokens[2].counter << std::endl;
+            std::cout << tokens[0].data << ":" << get_type_TAC(tokens[0].type) << " = aux_" << tokens[2].counter << std::endl << std::endl;
     else
         if (tokens[0].index)
-            std::cout << "&" << tokens[0].data << " + auxPtr_" << tokens[0].index << " = " << tokens[2].data << std::endl;
+            std::cout << "&" << tokens[0].data << " + auxPtr_" << tokens[0].index << " = " << tokens[2].data << std::endl << std::endl;
         else
-            std::cout << tokens[0].data << " = " << tokens[2].data << std::endl;
+            std::cout << tokens[0].data << ":" << get_type_TAC(tokens[0].type) << " = " << tokens[2].data << std::endl << std::endl;
+}
+
+// {20, {gtoken_expression, {token_par_esq, gtoken_logic, token_par_dir}}},
+void Semantico::call_control_start(std::vector<t_token> tokens) {
+    std::cout << "if aux_" << std::to_string(globalCounter - 1) << " goto label_" << labelCounter++ << std::endl;
+    std::cout << "goto label_" << labelCounter << std::endl << std::endl;
+    falseLabels.push(labelCounter++);
+    std::cout << "label_" << labelCounter - 2 << ":" << std::endl;
 }
 
 // {16, {gtoken_control, {gtoken_control_struc, gtoken_expression, gtoken_block}}},
-void Semantico::call_control(std::vector<t_token> tokens) {
-    if (tokens[0].data == "if") {
-        std::cout << "if " << tokens[1].data << " {" << std::endl;
-        std::cout << "}" << std::endl;
+void Semantico::call_control_end(std::vector<t_token> tokens) {
+    if (tokens[0].data == "while") {
+        std::cout << "goto label_" << loopLabels.top() << std::endl << std::endl;
+        loopLabels.pop();
     }
-    else if (tokens[0].data == "while") {
-        std::cout << "while " << tokens[1].data << " {" << std::endl;
-        std::cout << "}" << std::endl;
-    }
+
+    std::cout << "label_" << falseLabels.top() << ":" << std::endl;
+    falseLabels.pop();
 }
 
 void Semantico::call_expression(std::vector<t_token> tokens) {
+    if (tokens[1].type == gtoken_op_rel)
+        tokens[0].type = token_bool;
     if (tokens[0].counter && tokens[2].counter) {
-        std::cout << "aux_" << globalCounter++ << " = aux_" << tokens[0].counter << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+        std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = aux_" << tokens[0].counter << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
     }
     else if (tokens[0].counter)
     {
         if (tokens[2].index) {
             int idxCounter2 = indexCounter++;
-            std::cout << "auxPtr_" << idxCounter2 << " = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
-            std::cout << "aux_" << globalCounter++ << " = aux_" << tokens[0].counter << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+            std::cout << "auxPtr_" << idxCounter2 << " : ptr = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = aux_" << tokens[0].counter << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
         }
         else
-            std::cout << "aux_" << globalCounter++ << " = aux_" << tokens[0].counter << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = aux_" << tokens[0].counter << " " << tokens[1].data << " " << tokens[2].data << std::endl;
     }
     else if (tokens[2].counter) {
         if (tokens[0].index) {
             int idxCounter1 = indexCounter++;
-            std::cout << "auxPtr_" << idxCounter1 << " = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
-            std::cout << "aux_" << globalCounter++ << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+            std::cout << "auxPtr_" << idxCounter1 << " : ptr = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
         }
         else
-            std::cout << "aux_" << globalCounter++ << " = " << tokens[0].data << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = " << tokens[0].data << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
     }
     else {
         if (tokens[0].index && tokens[2].index) {
             int idxCounter1 = indexCounter++, idxCounter2 = indexCounter++;
-            std::cout << "auxPtr_" << idxCounter1 << " = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
-            std::cout << "auxPtr_" << idxCounter2 << " = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
-            std::cout << "aux_" << globalCounter++ << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+            std::cout << "auxPtr_" << idxCounter1 << " : ptr = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "auxPtr_" << idxCounter2 << " : ptr = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
         }
         else if (tokens[0].index) {
             int idxCounter1 = indexCounter++;
-            std::cout << "auxPtr_" << idxCounter1 << " = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
-            std::cout << "aux_" << globalCounter++ << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+            std::cout << "auxPtr_" << idxCounter1 << " : ptr = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " " << tokens[2].data << std::endl;
         }
         else if (tokens[2].index) {
             int idxCounter2 = indexCounter++;
-            std::cout << "auxPtr_" << idxCounter2 << " = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
-            std::cout << "aux_" << globalCounter++ << " = " << tokens[0].data << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+            std::cout << "auxPtr_" << idxCounter2 << " : ptr = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = " << tokens[0].data << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
         }
         else
-            std::cout << "aux_" << globalCounter++ << " = " << tokens[0].data << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+            std::cout << "aux_" << globalCounter++ << ":" << get_type_TAC(tokens[0].type) << " = " << tokens[0].data << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+    }
+}
+//{25, {gtoken_relacional, {gtoken_relacional, gtoken_op_rel, gtoken_relacional_op}}}
+void Semantico::call_expression_bool(std::vector<t_token> tokens) {
+    if (tokens[1].type == token_or) tokens[1].data = "or";
+    if (tokens[1].type == token_and) tokens[1].data = "and";
+    if (tokens[0].counter && tokens[2].counter) {
+        std::cout << "aux_" << globalCounter++ << ": bool = aux_" << tokens[0].counter << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+    }
+    else if (tokens[0].counter)
+    {
+        if (tokens[2].index) {
+            int idxCounter2 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter2 << " : ptr = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ": bool = aux_" << tokens[0].counter << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+        }
+        else
+            if (std::isalpha(tokens[2].data[0]))
+                std::cout << "aux_" << globalCounter++ << ": bool = aux_" << tokens[0].counter << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+            else
+                std::cout << "aux_" << globalCounter++ << ": bool = aux_" << tokens[0].counter << " " << tokens[1].data << (std::stoi(tokens[2].data) ? " true" : " false") << std::endl;
+    }
+    else if (tokens[2].counter) {
+        if (tokens[0].index) {
+            int idxCounter1 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter1 << " : ptr = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ": bool = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+        }
+        else
+            if (std::isalpha(tokens[0].data[0]))
+                std::cout << "aux_" << globalCounter++ << ": bool = " << tokens[0].data << " " << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+            else
+                std::cout << "aux_" << globalCounter++ << ": bool = " << (std::stoi(tokens[0].data) ? "true " : "false ") << tokens[1].data << " aux_" << tokens[2].counter << std::endl;
+    }
+    else {
+        if (tokens[0].index && tokens[2].index) {
+            int idxCounter1 = indexCounter++, idxCounter2 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter1 << " : ptr = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            std::cout << "auxPtr_" << idxCounter2 << " : ptr = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            std::cout << "aux_" << globalCounter++ << ": bool = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+        }
+        else if (tokens[0].index) {
+            int idxCounter1 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter1 << " : ptr = *" << tokens[0].data << " + auxPtr_" << tokens[0].index << std::endl;
+            if (std::isalpha(tokens[2].data[0]))
+                std::cout << "aux_" << globalCounter++ << ": bool = &auxPtr_" << idxCounter1 << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+            else
+                std::cout << "aux_" << globalCounter++ << ": bool = &auxPtr_" << idxCounter1 << " " << tokens[1].data << (std::stoi(tokens[2].data) ? " true" : " false") << std::endl;
+        }
+        else if (tokens[2].index) {
+            int idxCounter2 = indexCounter++;
+            std::cout << "auxPtr_" << idxCounter2 << " : ptr = *" << tokens[2].data << " + auxPtr_" << tokens[2].index << std::endl;
+            if (std::isalpha(tokens[0].data[0]))
+                std::cout << "aux_" << globalCounter++ << ": bool = " << tokens[0].data << " " << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+            else
+                std::cout << "aux_" << globalCounter++ << ": bool = " << (std::stoi(tokens[0].data) ? "true " : "false ") << tokens[1].data << " &auxPtr_" << idxCounter2 << std::endl;
+        }
+        else
+            if (std::isalpha(tokens[0].data[0]) && std::isalpha(tokens[2].data[0]))
+                std::cout << "aux_" << globalCounter++ << ": bool = " << tokens[0].data << " " << tokens[1].data << " " << tokens[2].data << std::endl;
+            else if (std::isalpha(tokens[0].data[0]))
+                std::cout << "aux_" << globalCounter++ << ": bool = " << tokens[0].data << " " << tokens[1].data << (std::stoi(tokens[2].data) ? " true" : " false") << std::endl;
+            else if (std::isalpha(tokens[2].data[0]))
+                std::cout << "aux_" << globalCounter++ << ": bool = " << (std::stoi(tokens[0].data) ? "true " : "false ") << tokens[1].data << " " << tokens[2].data << std::endl;
+            else
+                std::cout << "aux_" << globalCounter++ << ": bool = " << (std::stoi(tokens[0].data) ? "true " : "false ") << tokens[1].data << (std::stoi(tokens[2].data) ? " true" : " false") << std::endl;
     }
 }
 
@@ -452,7 +559,7 @@ token_type Semantico::BoolCoercion(t_token left, t_token right) {
         throw std::runtime_error("ERROR: cannot coerce string");
     }
 
-    return token_int;
+    return token_bool;
 }
 
 token_type Semantico::getSymbolType(std::string name) {
@@ -486,10 +593,19 @@ bool Semantico::checkAssignment(t_token left, t_token right) {
     if (left.type == right.type) {
         return true;
     }
-    else {
-        std::cout << "ERROR: type mismatch at line" << left.line << " col" << left.col << " data: " << left.data << " " << right.data << std::endl;
-        success = false;
+
+    if (left.type == token_string || right.type == token_string) {
+        throw std::runtime_error("ERROR: cannot assign string");
     }
+
+    if (left.type == token_bool || right.type == token_bool) {
+        return true;
+    }
+
+    std::cout << "ERROR: type mismatch at line" << left.line << " col" << left.col << " data: " << left.data << " " << right.data << std::endl;
+    success = false;
+
     return left.type == right.type;
 }
+
 

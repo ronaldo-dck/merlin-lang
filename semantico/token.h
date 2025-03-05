@@ -40,6 +40,7 @@ enum token_type {
     token_col_dir,
     token_chv_esq,
     token_chv_dir,
+    token_bool,
     gtoken_program = 100,
     gtoken_cmd_init,
     gtoken_declare_sq,

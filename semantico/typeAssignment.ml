@@ -6,6 +6,7 @@ tome tomename {
         string num1 : "1";
         int[2] vetor;
         float[2] vetor2;
+        int i;
     }
 
     _echo("teste");
@@ -25,25 +26,40 @@ tome tomename {
     _summon(vetor[num]);
     _summon(vetor2[num]);
 
-    _num : 10 * 11 + 12 < 13 * 14 + 15 & 10;
+    _num : 10 * 11 < 13 * 14 & 10;
+    _num : 0 & 10;
     _num : 12 + 13 * 14;
     _num : numero + 15;
     _num : numero + 16 + 17;
     _vetor[1] : vetor[0] + numero;
-    numero : vetor[num] + vetor[numero];
-    numero : numero + vetor[numero];
-    numero : vetor[num] + numero;
+    _numero : vetor[num] + vetor[numero];
+    _numero : numero + vetor[numero];
+    _numero : vetor[num] + numero;
     _numero1 : 1.1;
     _vetor[1] : 9;
     _vetor2[1] : 3.2;
     _vetor[num] : 9;
     _vetor2[num] : 3.2;
 
-    _if (num = 10) {
-    _    num : numero * 2;
+
+    _for (i : 2; i < 3; 1){
+    _    echo("oie");
+    _    for (i : 2; i < 3; 2) {
+    _        echo("tchau");
+    _    };
+    _};
+
+    _if (num > 10 & num < 15 ) {
+        if (numero < 10 | num > 10) {
+            num : numero * 2;
+        };
+    _    echo("oi");
     _};
 _
-    _while (num < 10 & num > 5) {
-    _    num : (10 + 5) / 2;
+    _while (num > 10 & num < 15 ) {
+    _    echo("oi");
+    _    while(1) {
+    _        echo("loop");
+    _    };
     _};
 }
