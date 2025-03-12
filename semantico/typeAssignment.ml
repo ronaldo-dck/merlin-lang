@@ -3,8 +3,8 @@ tome tomename {
         int numero;
         float numero1 : ~0.0;
         int num : ~1;
-        string num1 : "1";
-        int[2] vetor;
+        string num1;
+        int[2] vetor : 1;
         float[2] vetor2;
         int i;
     }
@@ -28,7 +28,7 @@ tome tomename {
 
     _num : 10 * 11 < 13 * 14 & 10;
     _num : 0 & 10;
-    _num : 12 + 13 * 14;
+    numero1 : num / 2.0;
     _num : numero + 15;
     _num : numero + 16 + 17;
     _vetor[1] : vetor[0] + numero;
