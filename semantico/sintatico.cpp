@@ -485,11 +485,12 @@ void sintax_analysis(vector<t_token> tokens, string outputFileName)
         {
 
             vector<t_token> params;
-            for (int i = 0; i < productions[next_state].derivados.size(); i++)
-            {
-                params.push_back(pilhaTipo.top());
-                pilhaTipo.pop();
-            }
+            if (!erro)
+                for (int i = 0; i < productions[next_state].derivados.size(); i++)
+                {
+                    params.push_back(pilhaTipo.top());
+                    pilhaTipo.pop();
+                }
 
             reverse(params.begin(), params.end());
 
@@ -502,7 +503,7 @@ void sintax_analysis(vector<t_token> tokens, string outputFileName)
             if (!erro)
                 pilhaTipo.push(semantic.execute(next_state, params));
             else
-                pilhaTipo.push(t_token{token_id, "error"});
+                pilhaTipo.push(t_token{ token_id, "error" });
 
             if (isFor == 2 && source == token_endline && pilha.top() == gtoken_logic) {
                 semantic.mid_for();
