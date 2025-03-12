@@ -59,7 +59,7 @@ Semantico::Semantico(std::string outputFileName) {
         // {3, {gtoken_declare_sq, {gtoken_type, token_id, token_endline, gtoken_declare_sq}}},
         { 3,LAMBDAFUNC->t_token { insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
         // {4, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline, gtoken_declare_sq}}},
-        { 4,LAMBDAFUNC->t_token { checkAssignment(tokens[0], tokens[3]); insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
+        { 4,LAMBDAFUNC->t_token { checkAssignment(tokens[0], tokens[3], true); insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
         // {5, {gtoken_cmd_sq, {gtoken_operation, token_endline, gtoken_cmd_sq}}},
         { 5,LAMBDAFUNC->t_token { tokens[0].type = gtoken_cmd_sq; return tokens[0];}},
         // {6, {gtoken_operation, {gtoken_assign_sq}}},
@@ -73,7 +73,7 @@ Semantico::Semantico(std::string outputFileName) {
         // {10, {gtoken_operation, {gtoken_echo_sq}}},
         {10,LAMBDAFUNC->t_token { tokens[0].type = gtoken_operation; return tokens[0];}},
         // {11, {gtoken_assign_sq, {'g'token_id, token_atr, gtoken_logic}}},
-        {11,LAMBDAFUNC->t_token { tokens[0].type = getSymbolType(tokens[0]); checkAssignment(tokens[0], tokens[2]); return tokens[0];}},
+        {11,LAMBDAFUNC->t_token { tokens[0].type = getSymbolType(tokens[0]); checkAssignment(tokens[0], tokens[2], false); return tokens[0];}},
         // {12, {gtoken_for_sq, {token_for, token_par_esq, gtoken_assign_sq, token_endline, gtoken_logic, token_endline, token_int, token_par_dir, gtoken_block}}},
         {12,LAMBDAFUNC->t_token { tokens[0].type = gtoken_for_sq; return tokens[0];}},
         // {13, {gtoken_summon_sq, {token_summon, token_par_esq, gtoken_id, token_par_dir}}},
@@ -163,7 +163,7 @@ Semantico::Semantico(std::string outputFileName) {
         // {55, {gtoken_declare_sq, {gtoken_type, token_id, token_endline}}},
         {55,LAMBDAFUNC->t_token { insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
         // {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
-        {56,LAMBDAFUNC->t_token { checkAssignment(tokens[0], tokens[3]); insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
+        {56,LAMBDAFUNC->t_token { checkAssignment(tokens[0], tokens[3], true); insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
         // {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
         { 57,LAMBDAFUNC->t_token { checkIndex(tokens[2]); tokens[0].data += "_0"; tokens[0].index = indexCounter; tokens[0].type = getSymbolType(tokens[0]); return tokens[0]; } },
         // {58, {gtoken_cmd_sq, {gtoken_operation, token_endline}}},
@@ -622,16 +622,16 @@ bool Semantico::checkIndex(t_token index) {
     return true;
 }
 
-bool Semantico::checkAssignment(t_token left, t_token right) {
-    if (left.type == right.type) {
-        return true;
-    }
-
-    if (left.type == token_string || right.type == token_string) {
+bool Semantico::checkAssignment(t_token left, t_token right, bool initial) {
+    if ((left.type == token_string || right.type == token_string) && !initial) {
         std::cout << "\033[31m Erro semantico\n \033[0m";
         std::cout << "Strings nao podem ser atribuidas l: " << left.line << " c: " << left.col << std::endl;
         success = false;
         return false;
+    }
+
+    if (left.type == right.type) {
+        return true;
     }
 
     if (left.type == token_bool || right.type == token_bool) {
