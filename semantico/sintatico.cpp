@@ -10,6 +10,10 @@
 #include "semantico.h"
 #include "state_table.h"
 #include "utils.h"
+#include "productions.cpp"
+#include "semantico.cpp"
+#include "state_table.cpp"
+#include "utils.cpp"
 using namespace std;
 
 token_type get_token(string lexema)
@@ -313,14 +317,15 @@ vector<token_type> extract_tokens_from_data(vector<t_token> tokens_and_data)
     return tokens_types;
 }
 
-void sintax_analysis(vector<t_token> tokens)
+void sintax_analysis(vector<t_token> tokens, string outputFileName)
 {
     StateTable stateTable = initStateTable();
     ProductionsMap productions = initProductions();
-    Semantico semantic = Semantico();
+    Semantico semantic = Semantico(outputFileName);
 
     stack<int> pilha;
     stack<t_token> pilhaTipo;
+    bool erro = false;
     pilha.push(gtoken_end);
     pilha.push(0);
 
@@ -341,6 +346,8 @@ void sintax_analysis(vector<t_token> tokens)
         }
         catch (const std::out_of_range& oor)
         {
+            erro = true;
+            semantic.success = false;
             entry = stateTable[current_state].begin()->second;
         aqui:
             // cout << entry << endl;
@@ -439,6 +446,7 @@ void sintax_analysis(vector<t_token> tokens)
         if (entry == "ACEITA")
         {
             // semantic.readTable();
+            semantic.finish(outputFileName);
             if (semantic.success)
                 cout << "Compilação finalizada com sucesso.\n";
             else
@@ -491,7 +499,10 @@ void sintax_analysis(vector<t_token> tokens)
             current_state = pilha.top();
 
             pilha.push(productions[next_state].red);
-            pilhaTipo.push(semantic.execute(next_state, params));
+            if (!erro)
+                pilhaTipo.push(semantic.execute(next_state, params));
+            else
+                pilhaTipo.push(t_token{token_id, "error"});
 
             if (isFor == 2 && source == token_endline && pilha.top() == gtoken_logic) {
                 semantic.mid_for();
@@ -512,6 +523,7 @@ void sintax_analysis(vector<t_token> tokens)
 int main(int argc, char const* argv[2])
 {
     string filename = argc > 1 ? argv[1] : "overview.ml";
-    sintax_analysis(lexical_analysis(filename));
+    string outputFileName = argc > 2 ? argv[2] : "output.etac";
+    sintax_analysis(lexical_analysis(filename), outputFileName);
     return 0;
 }

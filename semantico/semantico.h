@@ -5,11 +5,13 @@
 #include <functional>
 #include <stack>
 #include <unordered_map>
+#include <fstream>
 #include "token.h"
 
 class Semantico {
 public:
-    Semantico();  // Constructor
+    Semantico(std::string outputFileName);
+    void finish(std::string outputFileName);
     std::map<int, std::function<t_token(std::vector<t_token>)>> actions;
     std::map<int, std::function<void(std::vector<t_token>)>> code;
     t_token execute(int next_state, std::vector<t_token> tokens);
@@ -22,7 +24,7 @@ public:
 private:
     std::unordered_map<std::string, token_type> symbolTable;
     bool insertSymbol(std::vector<t_token> tokens);
-    token_type getSymbolType(std::string name);
+    token_type getSymbolType(t_token token);
 
     bool checkAssignment(t_token left, t_token right);
     token_type Coercion(t_token left, t_token right);
@@ -43,6 +45,7 @@ private:
     std::stack<int> falseLabels;
     std::stack<int> loopLabels;
     std::vector<std::string> generatedCode;
+    std::ofstream output;
 };
 
 #endif // SEMANTICO_H

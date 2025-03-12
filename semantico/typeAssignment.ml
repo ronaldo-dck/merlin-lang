@@ -1,8 +1,8 @@
 tome tomename {
     ingredients {
         int numero;
-        float numero1 : 0.0;
-        int num : 1;
+        float numero1 : ~0.0;
+        int num : ~1;
         string num1 : "1";
         int[2] vetor;
         float[2] vetor2;
@@ -37,9 +37,9 @@ tome tomename {
     _numero : vetor[num] + numero;
     _numero1 : 1.1;
     _vetor[1] : 9;
-    _vetor2[1] : 3.2;
+    vetor2[1] : 3.2;
     _vetor[num] : 9;
-    _vetor2[num] : 3.2;
+    vetor2[num] : 3.2;
 
 
     _for (i : 2; i < 3; 1){
@@ -50,9 +50,9 @@ tome tomename {
     _};
 
     _if (num > 10 & num < 15 ) {
-        if (numero < 10 | num > 10) {
-            num : numero * 2;
-        };
+    _    if (numero < 10 | num > 10) {
+    _        num1 : numero * 2;
+    _    };
     _    echo("oi");
     _};
 _

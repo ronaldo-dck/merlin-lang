@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/semantico/sintatico.x",
-            "args": ["overview.ml"],
+            "args": ["typeAssignment.ml"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
