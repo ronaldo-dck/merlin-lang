@@ -27,6 +27,7 @@ private:
     token_type getSymbolType(t_token token);
 
     bool checkAssignment(t_token left, t_token right);
+    bool checkIndex(t_token index);
     token_type Coercion(t_token left, t_token right);
     token_type BoolCoercion(t_token left, t_token right);
 

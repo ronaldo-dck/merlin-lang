@@ -165,7 +165,7 @@ Semantico::Semantico(std::string outputFileName) {
         // {56, {gtoken_declare_sq, {gtoken_type, token_id, token_atr, gtoken_value, token_endline}}},
         {56,LAMBDAFUNC->t_token { checkAssignment(tokens[0], tokens[3]); insertSymbol(tokens); tokens[0].type = gtoken_declare_sq; return tokens[0];}},
         // {57, {gtoken_id, {token_id, token_col_esq, token_id, token_col_dir}}},
-        { 57,LAMBDAFUNC->t_token { tokens[0].data += "_0"; tokens[0].index = indexCounter; tokens[0].type = getSymbolType(tokens[0]); return tokens[0]; } },
+        { 57,LAMBDAFUNC->t_token { checkIndex(tokens[2]); tokens[0].data += "_0"; tokens[0].index = indexCounter; tokens[0].type = getSymbolType(tokens[0]); return tokens[0]; } },
         // {58, {gtoken_cmd_sq, {gtoken_operation, token_endline}}},
         {58,LAMBDAFUNC->t_token { tokens[0].type = gtoken_cmd_sq; return tokens[0]; }},
         // {59, {gtoken_cmd_sq, {}}},
@@ -608,6 +608,18 @@ bool Semantico::insertSymbol(std::vector<t_token> tokens) {
     std::cout << "Identificador " << tokens[1].data << " ja foi declarado. l: " << tokens[1].line << " c: " << tokens[1].col << std::endl;
     success = false;
     return false;
+}
+
+bool Semantico::checkIndex(t_token index) {
+    index.data += "_0";
+    token_type type = getSymbolType(index);
+    if (type != token_int) {
+        std::cout << "\033[31m Erro semantico\n \033[0m";
+        std::cout << "Variavel de indexacao deve ser int32. l: " << index.line << " c: " << index.col << std::endl;
+        success = false;
+        return false;
+    }
+    return true;
 }
 
 bool Semantico::checkAssignment(t_token left, t_token right) {
